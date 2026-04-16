@@ -1,0 +1,159 @@
+Super Robin Hood — Reverse Engineering Project
+================================================
+
+This repository is a mixture of original work (reverse engineering,
+documentation, and Rust / TypeScript tooling) and third-party material
+(the original game, its source code, and its assets). Different parts
+carry different licenses. Read carefully before redistributing.
+
+--------------------------------------------------------------------
+1. Original work by the repository author — MIT License
+--------------------------------------------------------------------
+
+The following parts of this repository are © 2026 Mikolaj and are
+released under the MIT License (text below):
+
+  - All code under tools/           (pp1tool, pp1web, musictool,
+                                     mapview, spriteview)
+  - All reverse-engineering notes, annotations, and documentation:
+      README.md
+      ARCHITECTURE.md
+      TODO.md
+      LICENSE (this file)
+      disasm/BANK_MAP.md
+      disasm/info/*.info     (da65 configuration)
+      disasm/info/*.map      (annotation directives)
+      disasm/info/macros/*.inc
+      disasm/game.cfg
+      disasm/Makefile
+      flake.nix, flake.lock, .envrc
+      tools/*/README.md, tools/*/FORMAT.md, tools/*/SPRITE_FORMAT.md
+
+MIT License
+
+Copyright (c) 2026 Mikolaj
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+--------------------------------------------------------------------
+2. Disassembly source (disasm/raw/*, disasm/src/*)
+--------------------------------------------------------------------
+
+The files under disasm/raw/ and disasm/src/ are **derivative works**
+of the original Super Robin Hood ROM. The underlying 6502 machine
+code is © 1990 Codemasters Software Company Ltd. / Camerica Inc. and
+its original authors. No license has been granted for this code.
+
+The reverse-engineering annotations layered on top (labels, comments,
+section banners, EQU aliases, ca65 reformatting) are © 2026 Mikolaj
+and are offered under the MIT License above, but that license CANNOT
+grant rights to the underlying copyrighted code.
+
+Treat these files the same way you would treat any reverse-engineered
+disassembly: for study, documentation, and interoperability purposes
+only. Redistribution of the assembled ROM or of substantial verbatim
+portions of it requires permission from the copyright holders.
+
+--------------------------------------------------------------------
+3. Original game source (original_source/)
+--------------------------------------------------------------------
+
+The directory original_source/ is a verbatim copy of the files
+published by the Oliver Twins alongside the article "Squeezing the
+NES" (pages 30-35) in Wireframe Magazine issue #34, in the repo:
+
+    https://github.com/Wireframe-Magazine/Wireframe-34
+    path: super-robin-hood-nes-source-code/
+
+That repository ships under the **Creative Commons Attribution-
+NonCommercial-ShareAlike 3.0 Unported** license (CC BY-NC-SA 3.0):
+
+    https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode
+
+Under CC BY-NC-SA 3.0 you may:
+  - Share and adapt the files in original_source/
+  - For non-commercial purposes only
+  - With attribution to the original authors
+  - Distributing any derivative work under the same license
+
+Authorship:
+  - Game code     : Philip Oliver & Andrew Oliver ("The Oliver Twins")
+  - Music engine  : Gavin Raeburn ("Mega Music Driver" / MUSICED
+                    lineage), bundled inside the .MUS / .PDS files
+  - Publisher     : Codemasters Software Company Ltd. (UK) /
+                    Camerica Inc. (North America), © 1990
+  - PP1PACK.EXE   : Codemasters (original MS-DOS tile compressor),
+                    published together with the source
+
+Any redistribution of original_source/ must retain this attribution
+and remain under CC BY-NC-SA 3.0.
+
+--------------------------------------------------------------------
+4. ROM files (roms/)
+--------------------------------------------------------------------
+
+  - roms/released.nes    — NOT included in this repository. The user
+                           must supply their own dump of a Super
+                           Robin Hood (Camerica, 1990) cartridge.
+                           Copyright © 1990 Codemasters / Camerica.
+
+  - roms/prerelease.nes  — INCLUDED. Derived from the PDS bank files
+                           (ROBINV7.BC / BD / BE / BF) published in
+                           original_source/ (see §3). As a derivative
+                           of CC BY-NC-SA 3.0 material, this ROM is
+                           itself distributed under CC BY-NC-SA 3.0:
+                           non-commercial use only, attribution to
+                           the Oliver Twins, and any further
+                           distribution must remain under the same
+                           license.
+
+--------------------------------------------------------------------
+5. Third-party code in web / Rust dependencies
+--------------------------------------------------------------------
+
+The tools vendor or depend on open-source third-party packages
+(image, ratatui, React, Vite, nginx, etc.). Each retains its own
+license as declared in its package metadata (Cargo.toml, package.json,
+LICENSE files inside node_modules, etc.). None of them are affected
+by this file.
+
+--------------------------------------------------------------------
+6. Summary
+--------------------------------------------------------------------
+
+If you want to reuse part of this repository:
+
+  - Rust / TypeScript tools, build system, docs, RE annotations
+      → MIT, go ahead. Attribution appreciated.
+
+  - Disassembled game code (disasm/raw, disasm/src)
+      → Not ours to license. Study / modify locally, but do not
+        redistribute the reassembled ROM.
+
+  - original_source/ and roms/prerelease.nes
+      → CC BY-NC-SA 3.0 (attribution: Philip & Andrew Oliver, via
+        Wireframe Magazine #34). Non-commercial use only; share
+        adaptations under the same license.
+
+  - roms/released.nes
+      → Not in this repository. Do not redistribute.
+
+If you are a copyright holder and have concerns about anything in
+this repository, please open an issue and we will address it.

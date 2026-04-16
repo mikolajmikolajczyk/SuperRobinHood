@@ -1,0 +1,47 @@
+# da65 info file for Bank 0 (switchable at $8000)
+# Overflow/MAPDATA — entirely map data, 100% match to alpha
+
+GLOBAL {
+    STARTADDR $8000;
+    CPU "6502";
+    COMMENTS 4;
+};
+
+SEGMENT { START $8000; END $BFFF; NAME "BANK_0"; };
+
+# --- Hardware registers ---
+LABEL { NAME "_bank";                  ADDR $FFFE; };
+
+# --- MAPDATA.DAT structure ---
+
+# Block tile definitions (4 quadrants, 256 entries each)
+LABEL { NAME "blkstl";         ADDR $8000; };  # block tiles, top-left
+LABEL { NAME "blkstr";         ADDR $8100; };  # block tiles, top-right
+LABEL { NAME "blksbl";         ADDR $8200; };  # block tiles, bottom-left
+LABEL { NAME "blksbr";         ADDR $8300; };  # block tiles, bottom-right
+LABEL { NAME "blksattr";       ADDR $8400; };  # block attribute/collision flags
+LABEL { NAME "solidchrs";      ADDR $8500; };  # per-chr solidity bitmask (4 bits per side)
+
+# Map metadata
+LABEL { NAME "mapheights";     ADDR $8600; };  # height (rows) for each of 14 maps
+LABEL { NAME "mapchrsdefs";    ADDR $860E; };  # chr set definitions (4 FF-terminated lists)
+LABEL { NAME "gamepallettes";  ADDR $861E; };  # 8 NES palette sets (16 bytes each)
+LABEL { NAME "spritecolours";  ADDR $8696; };  # sprite palettes (4 x 4 bytes)
+
+# Map data (height x 14 columns per map)
+LABEL { NAME "mapb";           ADDR $86A6; };  # map B (72 rows)
+LABEL { NAME "mapc";           ADDR $8A96; };  # map C (32 rows)
+LABEL { NAME "mapd";           ADDR $8C56; };  # map D (16 rows)
+LABEL { NAME "mape";           ADDR $8D36; };  # map E (64 rows)
+LABEL { NAME "mapf";           ADDR $90B6; };  # map F (208 rows)
+LABEL { NAME "mapg";           ADDR $9C16; };  # map G (176 rows)
+LABEL { NAME "maph";           ADDR $A5B6; };  # map H (176 rows)
+LABEL { NAME "mapi";           ADDR $AF56; };  # map I (160 rows)
+LABEL { NAME "mapj";           ADDR $B816; };  # map J (40 rows)
+LABEL { NAME "mapl";           ADDR $BA46; };  # map L (32 rows + 8-byte wall padding)
+LABEL { NAME "mapm";           ADDR $BC0E; };  # map M (24 rows)
+LABEL { NAME "mapn";           ADDR $BD5E; };  # map N (32 rows)
+LABEL { NAME "mapo";           ADDR $BF1E; };  # map O (16 rows)
+
+# --- Entire bank is data ---
+RANGE { START $8000; END $BFFF; TYPE ByteTable; };

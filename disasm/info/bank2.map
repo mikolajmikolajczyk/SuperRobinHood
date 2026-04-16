@@ -1,0 +1,164 @@
+# bank2.map — annotations for bank2.s
+#
+# Labels sourced from original_source/src/CMLOGO.ROU and SMILEY.ROU
+
+# ---------------------------------------------------------------------------
+# SECTION banners
+# ---------------------------------------------------------------------------
+
+SECTION  cm_logo           CMLOGO.ROU
+SECTION  smiley            SMILEY.ROU
+
+# ---------------------------------------------------------------------------
+# Structure comments
+# ---------------------------------------------------------------------------
+
+INLINE  8361  --- CMLOGO data: SFX noise, init table, strip data, bitmaps, palette ---
+INLINE  842C  --- CMLOGO.PP1 compressed character data ---
+INLINE  8A73  --- SMILEY checksum expected values + NOP padding ---
+INLINE  8B3A  --- face tile data (48 bytes) ---
+INLINE  8B6A  --- collision chr indices ---
+INLINE  8B6F  --- PP1 compressed character sets (hiscore, title, robin, map tiles) ---
+
+# ---------------------------------------------------------------------------
+# CMLOGO.ROU code labels
+# ---------------------------------------------------------------------------
+
+RENAME  L8008  cm_init_loop       ; !55 — zero-page init loop
+RENAME  L8026  cm_powerup_detect  ; !POWERUP — powerup detection
+RENAME  L802B  cm_reset_handler   ; !RESET — reset handler
+RENAME  L8030  cm_setup_init      ; !IN — init table copy
+RENAME  L8048  cm_cls_loop        ; !CV0 — clear VRAM
+RENAME  L8051  cm_ab_print        ; !AB2 — AB logo outer loop
+RENAME  L805F  cm_ab_inner        ; !AB1 — AB logo inner loop
+RENAME  L807B  cm_ab_attr_outer   ; !AB5 — AB attribute outer
+RENAME  L807D  cm_ab_attr_inner   ; !AB6 — AB attribute inner
+RENAME  L8095  cm_sfx_setup       ; !CSFX — SFX register setup
+RENAME  L8099  cm_sfx_clear       ; !CSFX — SFX clear loop
+RENAME  L80BB  cm_noise_post      ; !N2 — post-circle noise
+RENAME  L80C9  cm_nmi_write       ; NMI — STA $400E noise write
+RENAME  L80F4  cm_saw_vol         ; !11 — saw ping volume
+RENAME  L8104  cm_precircle_sfx   ; !670 — pre-circle SFX
+RENAME  L8123  cm_timeout_check   ; !600 — timeout/main loop
+RENAME  L813B  cm_joypad_loop     ; !J1 — joypad read loop
+RENAME  L8147  cm_loop_jmp        ; !CM_LOOP — main loop return
+RENAME  L814A  cm_timeout         ; !TIMEOUT — screen off, return
+RENAME  L815E  cm_vblank          ; CM_VBLANK — vblank sync
+RENAME  L8160  cm_vblank_wait     ; !1 — spin-wait loop
+RENAME  L8170  cm_pal_outer       ; !P2 — palette upload outer
+RENAME  L8172  cm_pal_inner       ; !P1 — palette upload inner
+RENAME  L81CD  cm_strip           ; CM_STRIP — write MASTERS column
+RENAME  L81E6  cm_strip_skip      ; !2 — skip VRAM read
+RENAME  L81EC  cm_strip_write     ; !1 — write chars
+RENAME  L81F7  cm_strip_done      ; !3 — save index, continue
+RENAME  L81F9  cm_codewrite       ; CM_CODEWRITE — write CODE chars
+RENAME  L8217  cm_code_loop       ; !LOOP2 — code char loop
+RENAME  L8226  cm_code_shift      ; !20 — bitmap shift
+RENAME  L8231  cm_code_skip       ; !SKIP — skip bit
+RENAME  L8236  cm_code_next       ; !NEXT2 — next code column
+RENAME  L823B  cm_tm_write        ; !NC — TM write + PPU setup
+RENAME  L8269  cm_scroll_setup    ; !AT_REST — scroll position
+RENAME  L8298  cm_codeplot        ; CM_CODEPLOT — sprite CODE plot
+RENAME  L829E  cm_codeplot_loop   ; !LOOP2 — codeplot loop
+RENAME  L82AA  cm_codeplot_shift  ; !LOOP — bitmap shift for sprites
+RENAME  L82CE  cm_codeplot_next   ; !NEXT — advance X
+RENAME  L82D7  cm_codeplot_nxtrow ; !NEXT2 — advance Y, loop
+RENAME  L82E0  cm_codeplot_done   ; !DONE — rts
+RENAME  L82E1  cm_quart           ; CM_QUART — circle quarters
+RENAME  L82ED  cm_quart_loop      ; !LOOP2 — quarter loop
+RENAME  L82F7  cm_quart_shift     ; !LOOP — quarter bitmap shift
+RENAME  L834A  cm_quart_next      ; !NEXT — advance X
+RENAME  L835E  cm_quart_nextrow   ; loop check
+
+# CMLOGO data offset labels
+RENAME  L83AD  cm_colfade_1       ; cm_colfade+1
+RENAME  L83AE  cm_colfade_2       ; cm_colfade+2
+
+# ---------------------------------------------------------------------------
+# SMILEY.ROU code labels
+# ---------------------------------------------------------------------------
+
+RENAME  L8908  smiley_copy_loop    ; !1 — copy ROM_CHECK to ZP
+RENAME  L891F  smiley_next_test    ; !NEXT_TEST — test 2 entry
+RENAME  L892F  smiley_no_eq        ; !NO_EQ — evaluate results
+RENAME  L893A  smiley_check_result ; check TEST_BYTE
+RENAME  L8945  smiley_failed       ; !FAILED — jmp bad_face
+RENAME  L8948  smiley_exit         ; !EXIT — rts
+RENAME  L8949  smiley_test2        ; !TEST_2 — char RAM test
+RENAME  L894C  smiley_test1a       ; !TEST1A — write VRAM outer
+RENAME  L894E  smiley_test1b       ; !TEST1B — write VRAM inner
+RENAME  L896D  smiley_test2a       ; !TEST2A — read VRAM outer
+RENAME  L896F  smiley_test2b       ; !TEST2B — read VRAM inner
+RENAME  L8995  smiley_test3a       ; !TEST3A — complement write outer
+RENAME  L8997  smiley_test3b       ; !TEST3B — complement write inner
+RENAME  L89B8  smiley_test4a       ; !TEST4A — complement read outer
+RENAME  L89BA  smiley_test4b       ; !TEST4B — complement read inner
+RENAME  L89DF  smiley_cram_fail    ; !CRAM_FAIL — CRAM test failed
+RENAME  L89E1  smiley_store_result ; !STORE_IT — store test result
+RENAME  L89E6  smiley_test2_set    ; !TEST2_SET — set VRAM addr
+RENAME  L89E8  smiley_rom_check    ; !ROM_CHECK — relocating code source
+RENAME  L89F3  smiley_keypad       ; !KEYPAD — read keypad
+RENAME  L89FE  smiley_pad_loop     ; !PAD — keypad bit-read loop
+RENAME  L8A0A  smiley_here2        ; !HERE2 — ROM check bank iteration
+RENAME  L8A25  smiley_here_entry   ; !HERE entry — checksum loop
+RENAME  L8A27  smiley_here         ; !HERE — ADC $8000,X
+RENAME  L8A2E  smiley_herea        ; !HEREA — ADC $9000,X
+RENAME  L8A35  smiley_hereb        ; !HEREB — ADC $A000,X
+RENAME  L8A3C  smiley_herec        ; !HEREC — ADC $B000,X
+RENAME  L8A43  smiley_hered        ; !HERED — INX, loop
+RENAME  L8A68  smiley_fail_it      ; !FAIL_IT — ROM check fail
+RENAME  L8A6A  smiley_test2_balls  ; !TEST2_BALLS — store result
+RENAME  L8AAC  smiley_show_face    ; !SHOW_FACE — common display
+RENAME  L8AD4  smiley_solid_chr    ; !1Q — download solid chr
+RENAME  L8AE5  smiley_print_face   ; !L1 — print face tiles
+RENAME  L8AFA  smiley_attr_loop    ; !L2 — attribute write
+RENAME  L8B1F  smiley_wait         ; !WAIT — delay loop
+RENAME  L8B2D  smiley_store        ; !STORE — write 4 palette bytes
+
+# ---------------------------------------------------------------------------
+# Transferred comments from alpha source
+# ---------------------------------------------------------------------------
+
+# CMLOGO.ROU
+INLINE  8000  CM_LOGO - Codemasters logo intro routine
+INLINE  8008  Clear zero page and fill sprite page ($0300) with $FF
+INLINE  803E  CLS - clear nametable
+INLINE  8051  Print 'AB' (Codemasters logo tilemap)
+INLINE  806D  'AB' attribute patch
+INLINE  8095  SFX setup - silence all APU channels
+INLINE  80A4  Main loop - wait for vblank then process frame
+INLINE  80AF  Noise freq - alternates each frame
+INLINE  80E6  Fading saw ping - volume ramps down over time
+INLINE  8104  Pre-circle: rising saw waves on pulse channels 1+2
+INLINE  8123  Timeout check - exit after animation completes
+INLINE  814A  Timeout: disable PPU, silence APU, set flags, return to game
+INLINE  815E  CM_VBLANK - wait for next frame, update PPU during vblank
+INLINE  8166  Upload palette - 8 colors repeated 4 times to fill 32 entries
+INLINE  818A  Colour fade-in: gradually brighten logo palette over time
+INLINE  81CD  CM_STRIP - write one more column of 'MASTERS' characters per frame
+INLINE  81F9  CM_CODEWRITE - write 'Code' as background tiles when scrolling done
+INLINE  8260  Vertical scroll - logo scrolls down then stops
+INLINE  8298  CM_CODEPLOT - plot sprite bitmap from codemap data
+INLINE  82E1  CM_QUART - display circle quarter sprites with 4-way symmetry
+INLINE  8423  CM_CHARACTERS - decompress PP1 character data to CHR RAM
+
+# SMILEY.ROU
+INLINE  8906  SMILEY self-test - ROM/RAM verification by Jon Menzies and Gavin Raeburn
+INLINE  8949  Test 2 - Char RAM test: write/read incrementing and complement patterns
+INLINE  89E6  TEST2_SET - set VRAM address to $0000 for CHR RAM access
+INLINE  89E8  ROM_CHECK - source of relocating code copied to ZP for self-modifying execution
+INLINE  89F3  KEYPAD - read controller 1 into pad1 variable
+INLINE  8A08  ROM checksum loop: checksums all banks, compares against expected values
+INLINE  8A68  ROM check failed: set bit 2 in test_byte
+INLINE  8AA2  Good face: green smiley ($55 checkerboard, $1A green background)
+INLINE  8AA8  Bad face: red smiley ($AA inverse checkerboard, $16 red background)
+INLINE  8AAC  SHOW_FACE - A=bg colour, X=face mask. Writes diagnostic result to $4400
+INLINE  8ACB  Download 1 solid character (16 bytes of $FF to CHR RAM)
+INLINE  8ADA  Print face - fill nametable with incrementing tiles
+INLINE  8AEE  Write face attribute data masked by pass/fail pattern
+INLINE  8B1D  Wait a few seconds then turn screen off
+
+# ROM checksum page boundaries (referenced by smiley_here/a/b/c)
+RENAME  L9000  bank2_page_9000     ; ADC $9000,X checksum target
+RENAME  LA000  bank2_page_a000     ; ADC $A000,X checksum target
+RENAME  LB000  bank2_page_b000     ; ADC $B000,X checksum target

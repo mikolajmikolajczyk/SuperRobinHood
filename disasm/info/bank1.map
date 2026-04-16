@@ -1,0 +1,363 @@
+# bank1.map — annotations for bank1.s
+#
+# Labels sourced from original_source/src/*.ROU and *.MUS
+# Applied by: annotate raw/bank1.s info/bank1.map src/bank1.s
+#
+# Note: PDS !labels are global scope. ca65 @labels are cheap locals
+# scoped between global labels. Since many bank1 branches cross
+# global label boundaries, we use prefixed global names (e.g. adsr_loop)
+# instead of @locals to avoid scope errors.
+
+# ---------------------------------------------------------------------------
+# SECTION banners
+# ---------------------------------------------------------------------------
+
+SECTION  bank1_entry       MUSIC1.MUS
+SECTION  trytoentername    HISCORE.ROU
+SECTION  titlescreen       TITLE.ROU
+SECTION  fx_setup          SOUNDFX.ROU
+SECTION  restupdatecoin    NEWBITS.ROU
+SECTION  robinhearts       EXPLODE.ROU
+SECTION  printrobin        PRTROBIN.ROU
+
+# ---------------------------------------------------------------------------
+# Structure comments
+# ---------------------------------------------------------------------------
+
+INLINE  860F  --- music data: note frequency tables, instruments, song data ---
+INLINE  9CC4  --- hiscore screen data: initnames + message strings ---
+INLINE  A1D6  --- pulsetable (16 bytes) + FX_TABLE pointers + FX bytecodes ---
+INLINE  A838  --- sprite/shape data table (144 bytes) ---
+INLINE  A930  --- message data: game over, completed, treasure, lives info ---
+INLINE  ABD9  --- secrettable: 24 secret area modification records ---
+INLINE  AF40  --- sincostable: 64-entry sine/cosine lookup (0-64 range) ---
+INLINE  AF81  --- exploderoubitsl/h: explosion routine dispatch tables ---
+INLINE  AF8F  --- flashrobin: invincibility flash timing (6 bytes) ---
+INLINE  B165  --- CHR tile pattern data + padding ---
+
+# ---------------------------------------------------------------------------
+# Transferred comments from alpha source
+# ---------------------------------------------------------------------------
+
+# MUSIC1.MUS
+INLINE  8007  Start music: A = tune number (1-9). Sets up 4 voice macro pointers then triggers
+INLINE  803A  Trigger: clears all music vars, sets IRQ, calls NEW_MACRO x4
+INLINE  8066  Play music: called once per frame to advance the music driver
+INLINE  80A1  Delay bit: increments delay counter, triggers DO_VOICES when tempo reached
+INLINE  80B5  ADSR: processes attack/decay/sustain envelopes for all 4 channels
+INLINE  8391  Do wobble check: handles vibrato phase cycling and amplitude ramping
+INLINE  83CD  Sub voice: lower pitch of voice X by A (adds to period = lower frequency)
+INLINE  83F0  Add voice: raise pitch of voice X by A (subtracts from period = higher frequency)
+INLINE  8417  New macro: advance macro pointer to next pattern for voice X. If ch0 reaches end, loops or stops
+INLINE  84A2  Do voices: process note data for all 4 voices, decode pattern bytes into notes and instruments
+
+# HISCORE.ROU
+INLINE  9818  Try to enter name: strips leading zeros, inserts commas, runs hiscore table check
+INLINE  9857  Display high scores: calls tryhiscore, sets up screen, starts tune 3
+INLINE  9874  Looking at high scores: main loop - vblank, name entry or pulse, start button check
+INLINE  9899  Setup high scores: loads chr tiles, prints hiscore screen layout, sets fade colours
+INLINE  98E6  Enter name: D-pad scrolls through letters (rate-limited to every 8 frames)
+INLINE  990C  Choose letter: A button confirms selection. If letter=0, acts as start. Max 8 chars
+INLINE  9940  Delete letter: B button deletes last entered letter
+INLINE  9985  Flash letter: positions sprite cursor at name entry position, pulses colours
+INLINE  9C71  Copy high scores to RAM: validates saved data integrity, copies defaults if corrupt
+
+# TITLE.ROU
+INLINE  9D8A  Title screen: alternates between title graphics and high score display
+INLINE  9DAA  Show title: sets up title screen graphics
+INLINE  9DB0  Wait for start: main title loop - vblank, sprites/music, timeout and start key
+INLINE  9DEA  Put on title sprites: swaps pattern table, pulses colour, places logo sprites
+INLINE  9E1B  Setup title screen: loads chr blocks, prints title message, configures sprites
+INLINE  A1B3  Pulse colour: oscillates palette entry X through pulsetable based on frame counter
+
+# SOUNDFX.ROU
+INLINE  A433  FX envelopes: handles attack envelope - increments volume until max reached
+INLINE  A454  FX try decay: handles decay envelope - decrements volume until min reached
+INLINE  A47E  FX setup: A = effect number. Checks priority, sets channel with attack/decay/volume/pitch
+INLINE  A52A  FX play: once per frame - outputs volume/pulse to APU, advances envelopes and instructions
+INLINE  A571  FX next: reads next FX instruction triplet (command, data, cycles) from stream
+INLINE  A5CD  FX do: 1=raise pitch, 2=lower, 3=set note, 5=raise slow, 6=lower slow, 7=trigger sub-FX
+INLINE  A68C  FX real speed: fractional speed divider for smooth pitch slides
+
+# NEWBITS.ROU
+INLINE  A6DA  Rest/update coin: handles on-screen treasure/heart display, sparkle, and pickup collision
+INLINE  A7C3  Pulsing heart: renders heart items with pulsing animation
+INLINE  A7E8  Put in heart bank: finds coin/treasure entry in coinco table matching map position
+INLINE  A8C8  Start float up number: stores coin position and starts 64-frame float-up counter
+INLINE  A8EE  Float up number: animates collected treasure value floating upward
+INLINE  AAE2  Print 6 treasures: draws treasure type icons on info screen with sparkle effects
+INLINE  AB12  Add sparkle to treasures: randomly spawns sparkle animations using PRNG seed
+INLINE  AB6C  Redefine water: animates water tile patterns by cycling CHR data (maps 0-4 only)
+
+# EXPLODE.ROU
+INLINE  AD12  Robin hearts: sets up heart particle position relative to Robin's XY (-18 Y, -4 X)
+INLINE  AD2D  Update hearts: iterates 3 heart particle groups, dispatches via jump table
+INLINE  AE21  Get value: sine/cosine lookup with 8-bit multiply by size for circular positioning
+INLINE  AE62  Put spin heart: writes one heart sprite entry to sprite block buffer
+INLINE  AE79  Print circle of hearts: renders 4 hearts in rotating circle using sin/cos offsets
+
+# PRTROBIN.ROU
+INLINE  AF95  Print Robin: main sprite rendering - invincibility flash, direction, animation dispatch
+INLINE  AFC5  Print Robin 1: renders legs based on anim frame, handles crouching offsets
+INLINE  B033  Work out body: selects from 8 running frames or standing/shooting poses
+INLINE  B058  Work out head: renders head, then falls through to print legs
+INLINE  B09D  Work out head routine: calculates head Y, randomly blinks/looks around every 32 frames
+INLINE  B0D6  Print Robin on ladder: alternates leg frames based on Y position, handles facing
+INLINE  B137  Print Robin shooting: selects shooting body frame based on firing timer
+INLINE  B159  Subtract height of sprite: adds sprite height offset for stacking parts vertically
+
+# ---------------------------------------------------------------------------
+# MUSIC1.MUS labels
+# ---------------------------------------------------------------------------
+
+RENAME  L802C  sm_loop          ; START_MUSIC !LOOP
+RENAME  L803E  trigger_loop     ; TRIGGER !LOOP2
+RENAME  L806F  pm_go            ; PLAY_MUSIC !GO
+RENAME  L8077  pm_2c            ; PLAY_MUSIC !2C — dec voice2
+RENAME  L807F  pm_2d            ; PLAY_MUSIC !2D — dec voice3
+RENAME  L8087  pm_2e            ; PLAY_MUSIC !2E — dec voice4
+RENAME  L808F  pm_inc_main      ; PLAY_MUSIC — inc main_counter
+RENAME  L809E  pm_fx_only       ; PLAY_MUSIC !FX_ONLY
+RENAME  L80B4  db_no            ; DELAY_BIT !NO — rts
+RENAME  L80B7  adsr_loop        ; ADSR !LOOP
+RENAME  L80DA  adsr_ch_off      ; ADSR !CHANNEL_IS_OFF
+RENAME  L80EC  adsr_attack      ; ADSR !ATTACK
+RENAME  L80FA  adsr_top         ; ADSR !TOP
+RENAME  L8100  adsr_no_top      ; ADSR !NO_TOP
+RENAME  L8106  adsr_decay       ; ADSR !DECAY
+RENAME  L8114  adsr_bot         ; ADSR !BOT
+RENAME  L811A  adsr_no_bot      ; ADSR !NO_BOT
+RENAME  L8122  adsr_sustain     ; ADSR !SUSTAIN
+RENAME  L8127  adsr_jjj_it      ; ADSR !JJJ_IT
+RENAME  L812A  adsr_neq         ; ADSR !NEQ
+RENAME  L812D  adsr_triangle    ; ADSR !TRIANGLE
+RENAME  L8131  adsr_j_no_spc    ; ADSR !J_NO_SPECIAL
+RENAME  L8134  adsr_special     ; ADSR !SPECIAL — thud
+RENAME  L8150  adsr_n_doof2     ; ADSR — dec special_thud
+RENAME  L8161  adsr_not_wn      ; ADSR !NOT_WHITE_NOISE
+RENAME  L818F  adsr_n_doof      ; ADSR !N_DOOF
+RENAME  L81C3  adsr_get_y       ; ADSR !GET_Y_BIT
+RENAME  L81C5  adsr_no_spc      ; ADSR !NO_SPECIAL — reverb
+RENAME  L81DE  adsr_n0          ; ADSR !N0 reverb
+RENAME  L81E9  adsr_n3          ; ADSR !N3 reverb
+RENAME  L81F1  adsr_on1         ; ADSR !ON1 reverb
+RENAME  L81F7  adsr_on2         ; ADSR !ON2 reverb
+RENAME  L81FC  adsr_next        ; ADSR !NEXT reverb
+RENAME  L81FE  adsr_no_rev      ; ADSR !NO_REVERB — tinny tone
+RENAME  L821F  adsr_one_off     ; ADSR !ONE_OFF
+RENAME  L8230  adsr_inc_tinny   ; ADSR !INC_TINNY
+RENAME  L823A  adsr_stoped      ; ADSR !STOPED
+RENAME  L823D  adsr_wobble      ; ADSR — wobble/gliss/chord
+RENAME  L8254  adsr_wob_rdy     ; ADSR !WOBBLE_READY
+RENAME  L8272  adsr_up_wob      ; ADSR !UP_WOB
+RENAME  L8280  adsr_down_wob    ; ADSR !DOWN_WOB
+RENAME  L828C  adsr_no_wob      ; ADSR !NO_WOB — glissando
+RENAME  L8294  adsr_gliss       ; ADSR !GLISS
+RENAME  L829F  adsr_eq          ; ADSR !EQ
+RENAME  L82AD  adsr_no_half     ; ADSR !NO_HALF
+RENAME  L82D2  adsr_test_lo     ; ADSR !TEST_LOW
+RENAME  L82DB  adsr_hit         ; ADSR !HIT — note reached
+RENAME  L82F9  adsr_semi_rw     ; ADSR !SEMI_REWRITE
+RENAME  L8306  adsr_j_no        ; ADSR !J_NO
+RENAME  L8309  adsr_go_up       ; ADSR !GO_UP
+RENAME  L8324  adsr_test_lo2    ; ADSR !TEST_LOW2
+RENAME  L832E  adsr_no_gliss    ; ADSR !NO_GLISS — chords
+RENAME  L8348  adsr_chord1      ; ADSR !CHORD1
+RENAME  L834E  adsr_chord2      ; ADSR !CHORD2
+RENAME  L8359  adsr_blip_note   ; ADSR !BLIP_NOTE — output
+RENAME  L8379  adsr_no_high     ; ADSR !NO_HIGH — end channel
+RENAME  L8381  adsr_no_loop     ; ADSR chord counter
+RENAME  L8390  adsr_no_ch       ; ADSR !NO_CH — rts
+RENAME  L83CC  dwc_no           ; DO_WOB_CHECK !NO — rts
+RENAME  L83E4  sv_store_lo      ; SUB_VOICE !STORE_LOW
+RENAME  L83EF  sv_ch_off        ; SUB_VOICE !CHANNEL_IS_OFF — rts
+RENAME  L840B  av_store_lo      ; ADD_VOICE !STORE_LOW
+RENAME  L8416  av_ch_off        ; ADD_VOICE !CHANNEL_IS_OFF — rts
+RENAME  L842D  nm_no_high       ; NEW_MACRO !NO_HIGH
+RENAME  L844E  nm_loop1         ; NEW_MACRO !LOOP1 — repeat
+RENAME  L8462  nm_no_high2      ; NEW_MACRO !NO_HIGH_2
+RENAME  L846E  nm_stop_tune     ; NEW_MACRO !STOP_TUNE
+RENAME  L8478  nm_no_stop       ; NEW_MACRO !NO_STOP_TUNE
+RENAME  L8498  nm_not_wn        ; NEW_MACRO !NOT_ON_WN
+RENAME  L84A4  dv_loop          ; DO_VOICES !LOOP
+RENAME  L84AC  dv_yes           ; DO_VOICES !YES — next note
+RENAME  L84E7  dv_no_new        ; DO_VOICES !NO_NEW
+RENAME  L84FD  dv_new_inst      ; DO_VOICES !NEW_INSTRUMENT_RELOOP
+RENAME  L8512  dv_not_wn        ; DO_VOICES !NOT_ON_WN
+RENAME  L8536  dv_glissando     ; DO_VOICES !GLISSANDO
+RENAME  L8558  dv_chords_on     ; DO_VOICES !CHORDS_ON
+RENAME  L8561  dv_no_chord      ; DO_VOICES !NO_CHORD
+RENAME  L8564  dv_n_large       ; DO_VOICES !N_LARGE_DELAYNOTE
+RENAME  L8573  dv_sort_delay    ; DO_VOICES !SORT_DELAY
+RENAME  L859A  dv_del_wob       ; DO_VOICES !DEL_WOB
+RENAME  L85A8  dv_white_noise   ; DO_VOICES !WHITE_NOISE
+RENAME  L85AB  dv_no_thud       ; DO_VOICES !NO_THUD
+RENAME  L8606  dv_next_voice    ; DO_VOICES !NEXT_VOICE
+RENAME  L860E  dv_no_loop       ; DO_VOICES !NO_LOOP — rts
+
+# Music data offset labels (INSTRUMENTS + N)
+RENAME  L86D0  INDEX_hi         ; INDEX+1 (high byte)
+RENAME  L86DB  INSTRUMENTS_1    ; INSTRUMENTS+1 (ATTACK)
+RENAME  L86DC  INSTRUMENTS_2    ; INSTRUMENTS+2 (PEAK)
+RENAME  L86DD  INSTRUMENTS_3    ; INSTRUMENTS+3 (DECAY)
+RENAME  L86DE  INSTRUMENTS_4    ; INSTRUMENTS+4 (SUSTAIN)
+RENAME  L86DF  INSTRUMENTS_5    ; INSTRUMENTS+5 (TIN_TONE)
+RENAME  L86E0  INSTRUMENTS_6    ; INSTRUMENTS+6 (WOB_DELAY)
+RENAME  L86E1  INSTRUMENTS_7    ; INSTRUMENTS+7 (WOB_FREQ)
+RENAME  L86E2  INSTRUMENTS_8    ; INSTRUMENTS+8 (WOB_INC)
+RENAME  L86E3  INSTRUMENTS_9    ; INSTRUMENTS+9 (WOB_MAX)
+RENAME  L86E4  INSTRUMENTS_10   ; INSTRUMENTS+10 (REVERB)
+RENAME  L86E5  INSTRUMENTS_11   ; INSTRUMENTS+11 (THUD_NOTE)
+
+# ---------------------------------------------------------------------------
+# HISCORE.ROU labels
+# ---------------------------------------------------------------------------
+
+LABEL   9818  missleadingnoughts
+LABEL   983C  putincommer
+LABEL   9857  displayhiscores
+LABEL   99A0  printachr
+
+RENAME  L9823  hi_n1            ; missleadingnoughts !1
+RENAME  L9832  hi_n3            ; missleadingnoughts !3
+RENAME  L9834  hi_n2            ; missleadingnoughts !2
+RENAME  L9840  pic_n2           ; putincommer !2
+RENAME  L9853  pic_n3           ; putincommer !3
+RENAME  L9869  dhi_n1           ; displayhiscores !1
+RENAME  L9876  lah_fly          ; lookingathiscores flybackvar
+RENAME  L9885  lah_n1           ; lookingathiscores !1 — pulse
+RENAME  L988A  lah_n2           ; lookingathiscores !2 — start
+RENAME  L98CE  shs_showcredits  ; setuphiscores — credits branch
+RENAME  L98D5  shs_printedname  ; setuphiscores — enter name
+RENAME  L98D9  shs_n1           ; setuphiscores !1
+RENAME  L98F9  en_n1            ; entername !1 — check down/left
+RENAME  L9906  en_n2            ; entername !2 — check bounds
+RENAME  L9923  cl_n1            ; chooseletter !1
+RENAME  L995F  dl_n1            ; deleteletter !1
+RENAME  L9991  fl_n1            ; flashletter !1
+RENAME  L9998  fl_n2            ; flashletter — store vram
+RENAME  L999C  fl_n3            ; flashletter — end loop
+RENAME  L9C75  copyhis          ; copyhiscorestoram — copy start
+RENAME  L9C77  copyhiscores     ; copyhiscorestoram — inner copy
+RENAME  L9C81  dontcopyinscores ; copyhiscorestoram — validate
+RENAME  L9C83  dcis_n1          ; dontcopyinscores !1
+RENAME  L9C85  dcis_n3          ; dontcopyinscores !3
+RENAME  L9C9C  dcis_n5          ; dontcopyinscores !5
+RENAME  L9CAE  dcis_n2          ; dontcopyinscores !2
+RENAME  L9CB3  dcis_n4          ; dontcopyinscores !4
+
+# ---------------------------------------------------------------------------
+# TITLE.ROU labels
+# ---------------------------------------------------------------------------
+
+RENAME  L9DB2  wfs_fly          ; waitforstart flybackvar
+RENAME  L9DD1  ctl_n2           ; conttitleloop !2
+RENAME  L9DE0  ctl_n1           ; conttitleloop !1
+RENAME  L9DEE  pts_waitsprcol   ; putontitlesprites — sprite collision
+RENAME  L9DF3  pts_n1           ; putontitlesprites !1
+
+# ---------------------------------------------------------------------------
+# SOUNDFX.ROU labels
+# ---------------------------------------------------------------------------
+
+RENAME  LA450  fxenv_ok         ; FX_ENVELOPES !OK
+RENAME  LA453  fxenv_skp        ; FX_ENVELOPES !SKP — rts
+RENAME  LA46B  fxtryd_bot       ; FX_TRYD !BOT
+RENAME  LA473  fxtryd_ok        ; FX_TRYD !OK
+RENAME  LA476  fxtryd_skp       ; FX_TRYD !SKP — rts
+RENAME  LA477  fxtryd_skp2      ; FX_TRYD !SKP2
+RENAME  LA49B  fxs_high         ; fx_setup !HIGH — priority ok
+RENAME  LA4D8  fxs_eeq          ; fx_setup !EEQ — store attack
+RENAME  LA4E5  fxs_eeq2         ; fx_setup !EEQ2 — store decay
+RENAME  LA511  fxs_set_voice    ; fx_setup — set voice type
+RENAME  LA531  fxp_again        ; fx_play !AGAIN
+RENAME  LA55E  fxp_no_fx        ; fx_play !NO_FX
+RENAME  LA569  fxp_no_fx1       ; fx_play !NO_FX1
+RENAME  LA56C  fxp_no_fx2       ; fx_play !NO_FX2
+RENAME  LA59B  fxn_quit         ; FX_NEXT !QUIT — done
+RENAME  LA5C7  fxn_triangle     ; FX_NEXT !TRIANGLE
+RENAME  LA5EC  fxd_store_hi     ; FX_DO !STORE_HIGH
+RENAME  LA5F2  fxd_store_lo     ; FX_DO !STORE_LOW
+RENAME  LA5F9  fxd_nfx1         ; FX_DO !NFX1 — lower pitch
+RENAME  LA618  fxd_nfx2         ; FX_DO !NFX2 — set note
+RENAME  LA636  fxd_nfx3         ; FX_DO !NFX3 — raise slowly
+RENAME  LA65A  fxd_nfx5         ; FX_DO !NFX5 — lower slowly
+RENAME  LA67E  fxd_j_store_lo   ; FX_DO !JSTORE_LOW
+RENAME  LA681  fxd_nfx6         ; FX_DO !NFX6 — sub-fx
+RENAME  LA68B  fxd_nfx7         ; FX_DO !NFX7 — rts
+RENAME  LA6A6  fxrs_n1          ; FX_REALSPEED !1
+RENAME  LA6AC  fxrs_re          ; FX_REALSPEED priority {4,3,2,1}
+RENAME  LA6CD  fxrs_real2       ; FX_REALSPEED !REAL2
+RENAME  LA6F2  fxrs_n2          ; FX_REALSPEED !2
+
+# ---------------------------------------------------------------------------
+# NEWBITS.ROU labels
+# ---------------------------------------------------------------------------
+
+RENAME  LA70C  ruc_n1           ; restupdatecoin !1
+RENAME  LA727  nosparkle        ; restupdatecoin — skip sparkle
+RENAME  LA784  ruc_pickup       ; restupdatecoin — treasure pickup
+RENAME  LA796  ruc_n3           ; restupdatecoin !3 — rts
+RENAME  LA797  endcoin          ; restupdatecoin — coin on screen
+RENAME  LA7C2  endcoin_n1       ; endcoin !1 — rts
+RENAME  LA7C3  pulsingheart     ; endcoin — pulsing heart sprite
+RENAME  LA7EA  findinitcoin     ; putinheartbank — find coin loop
+RENAME  LA7F9  fic_n2           ; findinitcoin !2 — advance
+RENAME  LA801  gotrightcoin     ; putinheartbank — found match
+RENAME  LA829  gotcoin_n1       ; gotrightcoin !1
+RENAME  LA839  coinco_1         ; coinco+1 (mapno byte of first entry)
+RENAME  LA8C8  startfloatupnum  ; startfloatupnumber
+RENAME  LA90C  fun_n3           ; floatupnumber !3
+RENAME  LA92F  fun_end          ; floatupnumber — rts
+RENAME  LAB06  sat_xcoords      ; showalltreasure x-coords
+RENAME  LAB0C  sat_ycoords      ; showalltreasure y-coords
+RENAME  LAB14  ast_donext       ; addsparkletotreasures — loop
+RENAME  LAB47  ast_alreadygot   ; addsparkletotreasures — dec
+RENAME  LAB68  ast_nextsparkle  ; addsparkletotreasures — dex
+RENAME  LAB78  rdw_n1           ; redefinewater !1
+RENAME  LABD8  rdw_done         ; redefinewater — rts
+RENAME  LAAE7  p6t_n2           ; print6treasures !2
+
+# ---------------------------------------------------------------------------
+# EXPLODE.ROU labels
+# ---------------------------------------------------------------------------
+
+RENAME  LAD2F  uh_morehearts    ; updatehearts — loop
+RENAME  LAD42  uh_n1            ; updatehearts !1
+RENAME  LAD76  uh_doeachheart   ; updatehearts — dispatch
+RENAME  LAD86  uh_backfromhrt   ; updatehearts — jsr printcircle
+RENAME  LAD89  uh_backfromhrt1  ; updatehearts — inx inx
+RENAME  LAD90  uh_endhearts     ; updatehearts — next set
+RENAME  LADA2  uh_finhearts1    ; updatehearts — bne back
+RENAME  LADA4  uh_finhearts     ; updatehearts — clear entry
+RENAME  LADD6  uh_expsizetable  ; explode size {1,2,3,4,5,6}
+RENAME  LAE05  uh_shrink        ; explode — shrink phase
+RENAME  LAE36  gv_waspos        ; getvalue — multiply by size
+RENAME  LAE47  gv_multlp        ; getvalue — 8-bit multiply
+RENAME  LAE58  gv_noadd         ; getvalue — asl/rol
+RENAME  LAE62  psh_put          ; putspinheart — write 4 bytes
+RENAME  LAEAB  pch_n1           ; printcircleofhearts !1
+RENAME  LAEAD  pch_topright     ; printcircleofhearts
+RENAME  LAED0  pch_n2           ; printcircleofhearts !2
+RENAME  LAEF5  pch_n3           ; printcircleofhearts !3
+RENAME  LAF1A  pch_n4           ; printcircleofhearts !4
+RENAME  LAF20  pch_n5           ; printcircleofhearts — write
+RENAME  LAF3D  pch_nomorehrt    ; printcircleofhearts — rts
+
+# ---------------------------------------------------------------------------
+# PRTROBIN.ROU labels
+# ---------------------------------------------------------------------------
+
+RENAME  LAF9B  pr_n1            ; printrobin !1
+RENAME  LAFB3  pr_n2            ; printrobin !2 — flash
+RENAME  LAFD1  pr1_notladder    ; printrobin1 — not on ladder
+RENAME  LB00B  pr1_n1           ; printrobin1 !1 — crouch
+RENAME  LB024  pr1_crouchofs    ; printrobin1 — crouch offset
+RENAME  LB03E  wb_n3            ; workoutbody !3
+RENAME  LB047  wb_n2            ; workoutbody !2
+RENAME  LB050  wb_n1            ; workoutbody !1
+RENAME  LB0C3  whr_n2           ; workoutheadrou !2
+RENAME  LB0E3  prl_n1           ; printrobinonladder !1
+RENAME  LB0EB  prl_n2           ; printrobinonladder !2
+RENAME  LB0F8  prl_n3           ; printrobinonladder !3
+RENAME  LB163  sths_end         ; subtrackheightofsprite — rts

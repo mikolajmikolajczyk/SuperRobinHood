@@ -1,0 +1,8 @@
+[package]
+name = "mapview"
+version = "0.1.0"
+edition = "2021"
+description = "Map viewer/renderer for Super Robin Hood NES"
+
+[dependencies]
+image = "0.25"

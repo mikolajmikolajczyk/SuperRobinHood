@@ -1,0 +1,47 @@
+# bank0.map — annotations for bank0.s (MAPDATA.DAT)
+#
+# Directives:
+#   INLINE  <addr>  <text>       ; inserts "; text" before the instruction/data at addr
+#   NOTE    <addr>  <text>       ; inserts ";; text" (user note)
+#   LABEL   <addr>  <name>       ; inserts "name := *" alias
+#   REPLACE <start> <end> <file> ; replaces byte range with snippet
+#   RENAME  <old>   <new>        ; renames all occurrences of old label
+#
+# All data sourced from original_source/src/MAPDATA.DAT
+
+# ---------------------------------------------------------------------------
+# Structure comments
+# ---------------------------------------------------------------------------
+
+INLINE  8000  blkstl: block tile indices, top-left quadrant (256 entries, indexed by block#)
+INLINE  8100  blkstr: block tile indices, top-right quadrant
+INLINE  8200  blksbl: block tile indices, bottom-left quadrant
+INLINE  8300  blksbr: block tile indices, bottom-right quadrant
+INLINE  8400  blksattr: block attribute/collision flags (256 entries)
+INLINE  8500  solidchrs: per-character solidity bitmask, 4 bits per tile (256 entries, 1 byte each)
+INLINE  8600  mapheights: height in rows for each of 14 maps (B-O)
+INLINE  860E  mapchrsdefs: chr set lists per map type, FF-terminated
+INLINE  861E  gamepallettes: 8 NES background palette sets (16 bytes each)
+LABEL   861E  kitchenspal
+LABEL   861E  skypal
+LABEL   862E  waterpal
+LABEL   863E  lavapal
+LABEL   864E  dungeonspal
+LABEL   865E  hallspal
+LABEL   866E  bedroomspal
+LABEL   867E  churchpal
+LABEL   868E  showlivescolours
+INLINE  8696  spritecolours: 4 sprite palette entries (4 bytes each)
+INLINE  86A6  === MAP B === 72 rows x 14 cols = 1008 bytes
+INLINE  8A96  === MAP C === 32 rows x 14 cols = 448 bytes
+INLINE  8C56  === MAP D === 16 rows x 14 cols = 224 bytes
+INLINE  8D36  === MAP E === 64 rows x 14 cols = 896 bytes
+INLINE  90B6  === MAP F === 208 rows x 14 cols = 2912 bytes
+INLINE  9C16  === MAP G === 176 rows x 14 cols = 2464 bytes
+INLINE  A5B6  === MAP H === 176 rows x 14 cols = 2464 bytes
+INLINE  AF56  === MAP I === 160 rows x 14 cols = 2240 bytes
+INLINE  B816  === MAP J === 40 rows x 14 cols = 560 bytes
+INLINE  BA46  === MAP L === 32 rows x 14 cols + 8 bytes wall padding = 456 bytes
+INLINE  BC0E  === MAP M === 24 rows x 14 cols = 336 bytes
+INLINE  BD5E  === MAP N === 32 rows x 14 cols = 448 bytes
+INLINE  BF1E  === MAP O === 16 rows x 14 cols = 224 bytes

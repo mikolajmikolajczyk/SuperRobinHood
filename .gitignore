@@ -1,0 +1,115 @@
+# ======================================================================
+# Super Robin Hood reverse-engineering project — .gitignore
+# ======================================================================
+
+# ----------------------------------------------------------------------
+# Nix / direnv
+# ----------------------------------------------------------------------
+.direnv/
+.envrc.local
+result
+result-*
+
+# ----------------------------------------------------------------------
+# Rust (tools/pp1tool, tools/mapview, tools/musictool, tools/spriteview)
+# ----------------------------------------------------------------------
+# Build output
+target/
+# Backup files created by rustfmt
+*.rs.bk
+# Generated perf profiles
+perf.data
+perf.data.old
+flamegraph.svg
+# Cargo.lock is intentionally kept for binary crates (reproducible builds)
+
+# ----------------------------------------------------------------------
+# Node / Vite / pp1web
+# ----------------------------------------------------------------------
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+*.local
+
+# ----------------------------------------------------------------------
+# Python (capstone scripting, future tooling)
+# ----------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# ----------------------------------------------------------------------
+# Disassembly build artifacts
+# ----------------------------------------------------------------------
+# cc65 / ld65 build directory (make)
+disasm/build/
+# 16 KB bank dumps extracted from the copyrighted released.nes — NEVER commit
+disasm/banks/*.bin
+# Raw da65 output is derived from the banks above, also not ours to ship
+disasm/raw/bank[0-9]*.s
+# (disasm/raw/header.s is hand-written and IS committed)
+
+# ----------------------------------------------------------------------
+# Generated demo / render assets
+# These are regenerable from roms/prerelease.nes (or released.nes).
+# They inherit CC BY-NC-SA 3.0 from the source — do not redistribute.
+# ----------------------------------------------------------------------
+tools/mapview/maps/
+tools/spriteview/sprites/
+tools/musictool/songs/
+
+# ----------------------------------------------------------------------
+# ROMs — the commercial released.nes is not ours to ship.
+# prerelease.nes IS committed (see LICENSE §4) so it is NOT ignored.
+# ----------------------------------------------------------------------
+roms/released.nes
+roms/*.sav
+roms/*.sram
+roms/*.fm2
+roms/*.state*
+
+# ----------------------------------------------------------------------
+# Emulator artifacts
+# ----------------------------------------------------------------------
+*.fcm
+*.fm3
+*.nsf.mp3
+
+# ----------------------------------------------------------------------
+# Editor / OS
+# ----------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----------------------------------------------------------------------
+# Claude Code
+# ----------------------------------------------------------------------
+# Personal / local permission overrides — never commit
+.claude/settings.local.json
+.claude/history/
+.claude/*.log
+
+# ----------------------------------------------------------------------
+# Misc scratch
+# ----------------------------------------------------------------------
+*.orig
+*.rej
+*.bak
+TAGS
+tags
+.ccls-cache/
+compile_commands.json

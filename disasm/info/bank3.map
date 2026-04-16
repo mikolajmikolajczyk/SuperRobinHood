@@ -1,0 +1,855 @@
+# bank3.map — local label renames and comments for bank3.s
+#
+# Directives:
+#   RENAME  <old>  <new>    ; optional comment
+#   COMMENT <label> <text>   ; inserts "; text" before label definition
+#
+# Labels sourced from original_source/src/*.ROU (PDS bank 14)
+# Applied by: python3 annotate.py src/bank3_raw.s info/bank3.map src/bank3.s
+#
+# Naming convention:
+#   PDS numeric locals !1 !2 etc  →  @n1 @n2 etc
+#   PDS named locals !done !fly   →  @done @fly etc
+#   PDS dotted locals !T3.2       →  @t3_2 etc
+#
+# ---------------------------------------------------------------------------
+# SECTION banners — inserted before the first label of each source file
+# ---------------------------------------------------------------------------
+
+SECTION  times16lo         TIMINGS.ROU
+SECTION  cm_reset          START.ROU
+SECTION  anewgame          MAINLOOP.ROU
+SECTION  cm_nmi            INTERUPT.ROU
+SECTION  resetrobinvars    CONTROL.ROU
+SECTION  putextrason       XTRACONT.ROU
+SECTION  flashblock        XTRAROUS.ROU
+SECTION  checkaddflamesetc ONSCREEN.ROU
+SECTION  spritetable       SPRITESD.DAT
+SECTION  printspriterev    SPRITESR.ROU
+SECTION  prtmessagefly     PRTMESS.ROU
+SECTION  compactedchrstable UNPACK.ROU
+SECTION  readkeypads       GENERAL.ROU
+SECTION  attributemasks    MAPSCROL.ROU
+SECTION  changebank_n1     ENDCODE.ROU
+
+# ---------------------------------------------------------------------------
+# TIMINGS.ROU
+# ---------------------------------------------------------------------------
+
+INLINE  C1F6  entry: A = strip number
+
+# ---------------------------------------------------------------------------
+# Macro replacements — data tables replaced with computed ca65 equivalents
+# ---------------------------------------------------------------------------
+
+REPLACE  C01A  C0F1  macros/times16lo.inc
+REPLACE  C0F2  C0FF  macros/times32tablelo.inc
+REPLACE  C100  C10D  macros/times32tablehi.inc
+REPLACE  C11E  C1F5  macros/times16hi.inc
+REPLACE  CCC9  CCF8  macros/runtablelo.inc
+REPLACE  F72B  F82A  macros/times14tablelo.inc
+REPLACE  F82B  F92A  macros/times14tablehi.inc
+
+# ---------------------------------------------------------------------------
+# SPRITESD.DAT — sprite pointer table (66 entries) + definitions
+# Format: count, {control, [x, y,] chrlo, chrhi | chrnum}...
+# Control bits: %vhxyPPPP — v=vflip, h=hflip, x=has displacement, y=chr pointer mode, P=palette
+# ---------------------------------------------------------------------------
+
+INLINE  E8DB  spritetable: 66 word pointers to sprite definitions
+INLINE  E95F  --- titlelogos group ---
+INLINE  E9D9  --- robinheads group (4 frames) ---
+INLINE  E9ED  --- robinbodies group (7 frames) ---
+INLINE  EA30  --- bodyfiring group (standing + 4 fire frames) ---
+INLINE  EA8A  --- legsrunning group (7 frames) ---
+INLINE  EAE5  --- morelegs group (standing, jumping, crouch, ladder) ---
+INLINE  EB31  --- barrels group (3 rotation frames) ---
+INLINE  EB64  --- canon + platform ---
+INLINE  EB70  --- trampoline group (2 frames) ---
+INLINE  EB8A  --- spider group (2 frames) ---
+INLINE  EBA6  --- bat group (2 frames) ---
+INLINE  EBBC  --- shared chr blocks (coin, canon, platform) ---
+INLINE  EBC6  --- deadarrow group (4 distance frames) ---
+INLINE  EC0A  --- eyes group (4 frames) ---
+INLINE  EC2E  --- guard group (low/high fire + recoil) ---
+INLINE  EC7A  --- fire group (5 frames) ---
+INLINE  ECBB  --- marion ---
+INLINE  ECD8  --- pause sprite ---
+INLINE  C200  entry: A = strip number
+
+# bank_table entries 12–15: mapper write values for each switchable bank
+RENAME  LC016  banksel12    ; bank_table[12] = $0C → selects bank0.bin at $8000
+RENAME  LC017  banksel13    ; bank_table[13] = $0D → selects bank1.bin at $8000
+RENAME  LC018  banksel14    ; bank_table[14] = $0E → selects bank2.bin at $8000
+RENAME  LC019  banksel15    ; bank_table[15] = $0F
+
+# emptyblockbuffer locals: !2 !4
+RENAME  LC226  @n2      ; !2 lda blockbuffer,x
+RENAME  LC273  @n4      ; !4 rts
+
+# ---------------------------------------------------------------------------
+# START.ROU — cm_reset / lock chip / pastlock
+# ---------------------------------------------------------------------------
+
+# lock chip: LOCK1 mid-instruction equate and locals
+RENAME  LC295  lock1        ; PDS LOCK1 — mid-instruction equate (*+1): bne lock1 loop re-entry
+RENAME  LC2B6  @n1          ; !1 dec $72 (ghfh scope: bcs @n1 counter decrement path)
+RENAME  LC2CF  @n1          ; !1 lda LC2DA,y (pastlock scope: bne @n1 copy loop start)
+
+# ---------------------------------------------------------------------------
+# MAINLOOP.ROU — startup / anewgame / ingameloop
+# ---------------------------------------------------------------------------
+
+# clearram loop
+RENAME  LC319  @n1      ; !1 sta (address),y  — clearram inner loop
+RENAME  LC31E  @n2      ; !2 inc $1C          — clearram page loop
+
+# anewgame flybackvar wait
+RENAME  LC35B  @fly     ; flybackvar inner bpl loop in anewgame
+
+# ingameloop flybackvar wait
+RENAME  LC39D  @fly     ; flybackvar inner bpl loop in ingameloop
+
+# ingameloop: !5 = odd-frame path (jsr changebank13rou first)
+# Must be global: LC402:=*+1 and LC406:=*+2 equates sit between the bne ref (C3FF) and this def (C413)
+RENAME  LC413  ingameloop_n5 ; !5 jsr changebank13rou (ingameloop: odd-frame path — global; LC402/LC406 break scope)
+
+# zoominstars: !1 = early return rts
+RENAME  LC492  @n1      ; !1 rts (zoominstars: bcc/bne early return)
+
+# ingameloop: !11 = skip zoominstars
+RENAME  LC3B1  @n11     ; !11 lda pause (ingameloop: skip zoominstars call)
+
+# ingameloop: scope break fix — LC3CA sits between refs and defs of @n21/@n12
+# make LC3CA a cheap local so it doesn't reset the scope
+RENAME  LC3CA  @pause_y ; pause-Y adjust branch (only used at bcs LC3CA within ingameloop)
+# ingameloop: pause screen layout jmp via !21 → endofmainloop
+RENAME  LC3D1  @n21     ; !21 jmp endofmainloop (pause: bne !21)
+RENAME  LC3D4  @n12     ; !12 jsr doorrou       (ingameloop: beq !12)
+
+# nearendofmainloop: killed handling
+RENAME  LC436  @n7      ; !7  lda pause         (nearendofmainloop killed path)
+RENAME  LC451  @n5      ; !5  lda fadecounter   (nearendofmainloop common rts path)
+
+# resetrobinvars1 / bob1 sequence
+RENAME  LC5B1  @n21     ; !21 lda #$05 (resetrobinvars1: tune check skip)
+
+# infinate lives loop
+RENAME  LC602  @n6      ; !6  lda #$03 sta hearts inx (infinate: lives loop body)
+
+# bob1 lives display
+RENAME  LC60D  @n1      ; !1  cpx #$00 (bob1: lower bound check)
+RENAME  LC616  @n12     ; !12 ldy #<life1mess (bob1: prtmessage index)
+RENAME  LC621  @n2      ; !2  tax jsr prtmessage (bob1: bcc !2)
+
+# copyintreasures
+RENAME  LC645  @n7      ; !7  iny (copyintreasures: bne !7)
+
+# resetrobinvars1 completedgame display
+RENAME  LC663  @n3      ; !3  jsr changebank12rou (completedgame: beq !3)
+
+# post-reset display wait loop
+RENAME  LC675  @n11     ; !11 jsr turninteron (bmi !11)
+RENAME  LC678  @n1      ; !1  asl flyflag — outer flybackvar restart
+RENAME  LC67A  @fly     ; flybackvar inner bpl in lives display loop
+
+# display-loop branch targets
+RENAME  LC6A0  @n8      ; !8  jsr changebank13rou (lda completedgame beq !8)
+RENAME  LC6AE  @n6      ; !6  lda pad (display wait loop)
+
+# ---------------------------------------------------------------------------
+# INTERUPT.ROU — cm_nmi / interupt / dontdointerupt / setfade / allblack
+# ---------------------------------------------------------------------------
+
+# interupt locals: !1 !4
+RENAME  LC4B2  @n1      ; !1 jsr emptyblockbuffer (interupt: bne @n1 skips fade+printbuffer)
+RENAME  LC4D1  @n4      ; !4 jsr dointerpause (interupt: bne @n4 skips sendspriteblock)
+
+# dontdointerupt locals: !1
+RENAME  LC4F5  @n1      ; !1 pla (dontdointerupt: bne @n1 skips music playback)
+
+# setfade locals: !1
+RENAME  LC51B  @n1      ; !1 lda (address),y (setfade: bne @n1 colour copy loop)
+
+# allblack: flybackvar wait loop
+RENAME  LC56E  @fly     ; flybackvar inner bpl loop in allblack
+
+# ---------------------------------------------------------------------------
+# CONTROL.ROU — moveman
+# ---------------------------------------------------------------------------
+
+RENAME  LC6C2  @n3      ; !3  rts (moveman: killed path)
+RENAME  LC6C3  @n2      ; !2  lda juststartedlife (moveman: beq !2)
+
+# moveman locals for robinjustjumped check
+RENAME  LC6EA  @n4      ; !4  lda robinladdercounter (moveman: bne !4)
+RENAME  LC6F2  @n1      ; !1  lda robinladder (moveman: beq !1)
+
+# robinnotjumping: standing-idle animation
+RENAME  LC725  @n3      ; !3  lda robincrouch (robinnotjumping: runcount/gravity bne !3)
+
+# doneleftright / fallthru
+RENAME  LC7B2  @n2      ; !2  lda #0 sta riseup (bcc !2)
+RENAME  LC7B7  @n3      ; !3  inc robiny (bne !3 / jmp !3)
+RENAME  LC7FF  @n1      ; !1  rts (fallthru: various bne/beq !1)
+
+# ontopofladder
+RENAME  LC81A  @n1      ; !1  rts (ontopofladder: bne !1)
+
+# checkleftrightkeys
+RENAME  LC832  @n1      ; !1  lda pad / and #lmask (beq !1)
+RENAME  LC83D  @n3      ; !3  cmp oleftright (bne !3)
+RENAME  LC847  @n4      ; !4  sta oleftright (beq !4)
+RENAME  LC84A  @n2      ; !2  rts (checkleftrightkeys: robincrouch bne !2)
+
+# onladder
+RENAME  LC87A  @n14     ; !14 dec robinxl (onladder: bcs !14)
+RENAME  LC87D  @bug     ; !bug ldy robiny (onladder: centering jmp !bug)
+RENAME  LC8A1  @bugok   ; !bugok jmp LC8FF (onladder: beq !bugok)
+RENAME  LC8A4  @n13     ; !13 jsr checkleftrightkeys (onladder: centred)
+RENAME  LC8D8  onladder_n3 ; !3  lda pad (onladder: beq !3 right-side check — global; LC8C3 breaks scope)
+RENAME  LC8EC  @n22     ; !22 lda robiny (onladder: beq !22 jump-right skip)
+RENAME  LC8FF  onladder_n4 ; !4  jsr checkifstillonladderup (onladder: final path — global; LC8C3 breaks scope)
+# LC8C3 itself is NOT renamed — it has no PDS local label number (it is the amask check inside the
+# left-wall block, and its only non-garbled reference is the fall-through from above); it also
+# serves as a data address referenced by ldx LC8C3,y in XTRACONT garbled data at $CCEF.
+RENAME  LC90E  @n2      ; !2  rts (checkifstillonladderup: beq !2)
+
+# checkifstillonladderdown locals: !1
+RENAME  LC93E  @n1      ; !1 rts (checkifstillonladderdown: bcc/beq early return)
+
+# checkifstillonladderup
+RENAME  LC9B3  @n1      ; !1  lda pad (checkifstillonladderup: beq/beq !1)
+RENAME  LC9BC  @n2      ; !2  rts (bne !2 / rts)
+
+# checkforladderdown
+RENAME  LC9E4  @n1      ; !1  lda robinjumping (bne !1)
+RENAME  LC9EE  @n2      ; !2  rts (bne !2)
+
+# docrouchstuff
+RENAME  LCA47  @n6      ; !6  lda counter (docrouchstuff: bne !6)
+RENAME  LCA50  @n1      ; !1  lda robinheight (docrouchstuff: inc then !1)
+RENAME  LCA65  @n5      ; !5  lda pad (docrouchstuff: bne !5)
+RENAME  LCA6E  @n4      ; !4  rts (docrouchstuff: bne !4 / LCA6E)
+
+# dofiring — all labels global because LCA8B is jsr'd from changingscreen2 ($FE4D),
+# making it a global entry point that would break the dofiring cheap-local scope.
+RENAME  LCA85  dofiring_n1 ; !1  cmp #$0C (dofiring: bne !1)
+RENAME  LCA8B  dofiring_n2 ; !2  and #bmask (dofiring: bne !2 — also jsr'd from $FE4D)
+RENAME  LCA8F  dofiring_n4 ; !4  dec robinfiring (dofiring: bne !4)
+RENAME  LCAA1  dofiring_n3 ; !3  rts (dofiring: bne !3)
+
+# animatelegs
+RENAME  LCAC7  @n4      ; !4  rts (animatelegs: not-jumping skip rts)
+RENAME  LCAC8  @n5      ; !5  ldx #$02 (animatelegs: bne !5 = jumping path)
+RENAME  LCAD9  @n1      ; !1  stx robinanim rts (animatelegs: bcc !1)
+
+# restorex1
+RENAME  LCAEE  @n1      ; !1  lda orobinxl (restorex1: bcc !1)
+
+# dogravity
+RENAME  LCB03  @n9      ; !9  lda robingravity (dogravity: bne !9)
+RENAME  LCB0C  @n4      ; !4  inc robingravity (dogravity: bmi !4)
+RENAME  LCB0F  @n3      ; !3  lda robingravity (dogravity: bcs !3)
+RENAME  LCB2F  @n10     ; !10 sta temp5 (dogravity: beq !10)
+RENAME  LCB5F  @n2      ; !2  dec robiny (dogravity: beq !2 / loop)
+RENAME  LCB76  @n7      ; !7  jsr findwallleft (dogravity: bmi !7)
+RENAME  LCB7B  @n8      ; !8  jsr restorex1 jmp !2 (dogravity)
+RENAME  LCB81  @n6      ; !6  lda #0 sta robinjumping (dogravity landed)
+RENAME  LCB9A  @n5      ; !5  lda #$80 sta robingravity (dogravity: bcc !5)
+RENAME  LCB9F  @n1      ; !1  rts (dogravity: bmi / bcc)
+
+# dorobinjumping
+RENAME  LCBAC  @bugwashere ; !bugwashere lda robincrouch
+RENAME  LCBB5  @n3      ; !3  jsr addleftright (dorobinjumping: beq !3)
+RENAME  LCBD1  @n2      ; !2  jsr findroof (dorobinjumping: beq !2)
+RENAME  LCBDC  @n1      ; !1  lda runcount (dorobinjumping: bpl !1)
+
+# addleftright
+RENAME  LCC2E  @n2      ; !2  lda runcount (addleftright: beq !2 / bne !2)
+RENAME  LCC3E  @n8      ; !8  lda counter (addleftright: bne !8)
+RENAME  LCC4D  @n11     ; !11 ldy #$01 (addleftright: bne !11)
+RENAME  LCC54  @n9      ; !9  lda oleftright (addleftright: bne !9)
+RENAME  LCC6F  @n5      ; !5  rts (addleftright: bcc !5)
+RENAME  LCC70  @n4      ; !4  sty temp (addleftright: negative path)
+RENAME  LCC8A  @n8b     ; !8  lda robinxh (addleftright: bcs !8b — check overflow)
+RENAME  LCCC5  @n17     ; !17 jmp restorex (addleftright: bne !17)
+RENAME  LCCC8  @n7      ; !7  rts (addleftright: bcc !7)
+
+# findwallleft / restwall
+# # LCD30 stays global (runtablelo data decodes bvc LCD30). This breaks @n2/@n3 in restwall:
+# so LCD34/LCD37 must also be global.
+#RENAME  LCD30  @n1      ; !1  cmp #$03 (findwallleft: return 1 path)
+RENAME  LCD34  restwall_n2 ; !2  lda #$01 rts (findwallleft: wall found — global; LCD30 breaks scope)
+RENAME  LCD37  restwall_n3 ; !3  lda #$00 rts (findwallleft: no wall — global; LCD30 breaks scope)
+
+# findfloor
+RENAME  LCD59  @n3      ; !3  jsr findsolid (findfloor: bcs !3)
+RENAME  LCD6F  @n4      ; !4  jsr findsolid (findfloor: bcc !4)
+RENAME  LCD7A  @n6      ; !6  sta solidfound (findfloor: bcs !6)
+RENAME  LCD8E  @n2      ; !2  lda #$00 (findfloor: bne !2)
+RENAME  LCD90  @n1      ; !1  rts (findfloor: bne !1)
+
+# findroof
+RENAME  LCD9D  @n2      ; !2  rts (findroof: beq !2)
+RENAME  LCDAB  @n1      ; !1  jsr findsolid (findroofleft: bcs !1)
+RENAME  LCDBE  @n2      ; !2  jsr findsolid (findroofright: bcc !2)
+
+# movebackcrouchedunder
+RENAME  LCDE6  @n1      ; !1  jmp setcrouch (movebackcrouchedunder: bne !1 then jmp)
+RENAME  LCDE9  @n2      ; !2  lda #$06 (LCDE9 = after !1 block)
+RENAME  LCDFE  @n3      ; !3  pla jmp setcrouch (slidebackright: bne !3)
+RENAME  LCE1E  @n4      ; !4  pla jmp setcrouch (slidingneg bne path)
+RENAME  LCE22  @n5      ; !5  lda #$FA findroofleft (slidingneg: bne !5)
+
+# checkrobinbehind
+RENAME  LCE8A  @n1      ; !1  lda runcount (checkrobinbehind: beq !1)
+RENAME  LCE94  @n4      ; !4  ldx #$20 (checkrobinbehind: beq !4)
+RENAME  LCE96  @n2      ; !2  stx spritebehind (checkrobinbehind: bcs/bcc)
+
+# putextrason / anotherrou / backfromrou
+RENAME  LCED7  @n1      ; !1  jmp anotherrou (putextrason: bcc !1)
+
+# maprouspointer and routinepointers hi-byte table columns
+# (PDS uses lda maprouspointer+1,x / lda routinepointers+1,x — da65 creates labels at +1)
+RENAME  LCEFB  maprouspointer_hi  ; maprouspointer+1: hi-byte column of map routine address pairs
+RENAME  LCF15  routinepointers_hi ; routinepointers+1: hi-byte column of routine address pairs
+
+# LCF36 is a DATA position (in routinepointers table, bytes decoded as bmi target) — skip
+
+# endofrous: wait loop for extravars overflow
+# All endofrous locals must be global because endofrous_n2/endofrous_n3 (maprouspointer data refs)
+# sit inside endofrous: scope and break cheap-local visibility for the whole function.
+RENAME  LCEE1  endofrous_n1 ; !1  php pha (endofrous: wait loop entry)
+RENAME  LCEE5  endofrous_n2 ; !2  and #$1E (endofrous: inner wait — global; ref from maprouspointer data)
+RENAME  LCEF6  endofrous_n3 ; !3  jmp !1 (endofrous inner loop — global; ref from maprouspointer data)
+RENAME  LCEF9  endofrous_n4 ; !4  rts (endofrous: bcc !4)
+
+# ---------------------------------------------------------------------------
+# XTRACONT.ROU — resetextravars, resetextras
+# ---------------------------------------------------------------------------
+
+# resetextravars locals: !1 !2
+RENAME  LD3D2  @n1      ; !1 lda blockbuffer/toplevvar1  — store+advance loop
+RENAME  LD3D9  @n2      ; !2 inc (address)+1             — page boundary
+
+# resetextras locals: !1 !2
+RENAME  LD3E8  @n1      ; !1 extrason loop body
+RENAME  LD3F2  @n2      ; !2 secret loop body
+
+# XTRACONT map data area: LCFCB LCFD0 LD002 LD084 LD0A7 LD0B6 LD0E2-LD0E3 LD12C
+# LD211 LD21D LD2A4 LD2C3 LD2C7 LD2CD LD2E6 LD2F5 LD326 LD34E LD36B LD397
+# are all DATA positions (map1rous through doordata tables, $CFCB-$D3FF) — DO NOT rename
+#
+# startstarstable data: LD489 LD49A LD4A8 LD4BE LD4D8 LD4E8 are data positions — DO NOT rename
+
+# startstars locals
+RENAME  LD515  @n1      ; !1 lda startstarstable,y — loop
+
+# ---------------------------------------------------------------------------
+# ONSCREEN.ROU — checkaddflamesetc, onscrxandy, updateXxx etc.
+# ---------------------------------------------------------------------------
+
+# gotspaceonscreen
+RENAME  LDE42  @n1      ; !1 lda temp (gotspaceonscreen: bvc !1)
+
+# LDE53 is in ablockrous data table — DATA, do not rename
+
+# LDF8F is addr alias (updatescrrous := * + 1) data — do not rename as label
+
+# updateeyes
+RENAME  LE209  @n2      ; !2  lda onscreencount2,y (updateeyes: bne !2)
+RENAME  LE222  @n1      ; !1  jmp backfromscreenrou (updateeyes)
+
+# updatetramp
+RENAME  LE2A9  @n1      ; !1  jsr checkleftrightkeys (updatetramp: bcc !1)
+
+# updatedrilldown
+RENAME  LE300  @n1      ; !1  ldx address8 (updatedrilldown: cpy bcc)
+
+# outofscreen
+RENAME  LE170  @n5      ; !5  cpx #$20 (outofscreen: bpl !5)
+RENAME  LE174  @n6      ; !6  lda #0 sta onscreenrou (outofscreen: bcc !6 / bcc !1)
+RENAME  LE17E  @n1      ; !1  rts (outofscreen: bcc !1)
+
+# updateflames
+RENAME  LE194  @n3      ; !3  sty temp (updateflames: bne !3)
+RENAME  LE1A4  @n1      ; !1  jmp backfromscreenrou (updateflames)
+
+# putinspit
+RENAME  LE025  @n1      ; !1  sta onscreencount1,x (putinspit: beq !1)
+
+# putinbat
+RENAME  LE0D2  @n3      ; !3  sta onscreencount1,x (putinbat: bne !3)
+
+# putinbarrel
+RENAME  LE129  @n1      ; !1  sta $04D2,x (putinbarrel: bne !1)
+RENAME  LE13F  @n2      ; !2  rts (putinbarrel: bne !2)
+
+# updatedrips
+RENAME  LE25A  @n1      ; !1  lda onscreeny,y (updatedrips: bcs !1)
+
+# updatetramp
+RENAME  LE2DF  @n1b     ; !1b lda #$2D (updatetramp: bpl path)
+RENAME  LE2E1  @n2      ; !2  ldx address8 (updatetramp: bne !2)
+
+# ---------------------------------------------------------------------------
+# XTRAROUS.ROU — flashblock, standguard, platformh, platformv etc.
+# ---------------------------------------------------------------------------
+
+# (Labels from XTRACONT/XTRAROUS are in the $D500–$DE50 region)
+# Most are handled by named labels in bank3.info; remaining Lxxxx below:
+
+# startstarstable data block: LD4BE LD4D8 LD4E8 — DATA (bpl into data) — skip
+
+# LD584 in startstars routine
+RENAME  LD584  @n2      ; !2  loop in startstars area (bne !2)
+
+# LD5D3 etc — check context
+RENAME  LD5D3  @n1      ; !1 branch in flashblock/standguard area
+RENAME  LD5D6  @n2      ; !2 branch in flashblock area
+RENAME  LD5EB  @n3      ; !3 branch target (bcc !3)
+RENAME  LD620  @n1      ; !1 loop body
+RENAME  LD62D  @n2      ; !2 rts path
+RENAME  LD645  @n3      ; !3 loop
+RENAME  LD67A  @n1      ; !1 branch
+RENAME  LD67D  @n2      ; !2 branch
+RENAME  LD68C  @n3      ; !3 branch
+RENAME  LD696  @n4      ; !4 branch
+RENAME  LD699  @n5      ; !5 rts/branch
+
+# platformh/platformv/keyrou/arrowrou/secretrou/marionrou
+RENAME  LD6B0  @n1      ; !1 entry/loop
+RENAME  LD73E  @n1      ; !1 branch
+RENAME  LD762  @n2      ; !2 branch
+RENAME  LD793  @n3      ; !3 branch
+RENAME  LD7AD  @n4      ; !4 branch
+RENAME  LD7B1  @n5      ; !5 branch
+RENAME  LD7D2  marionrou_n1 ; !1 branch (global; runtablelo data at $CCF2 decodes cmp $D7D2)
+RENAME  LD804  @n2      ; !2 branch
+RENAME  LD815  @n3      ; !3 branch
+RENAME  LD837  @n4      ; !4 branch
+RENAME  LD872  @n5      ; !5 branch
+RENAME  LD885  @n6      ; !6 branch
+RENAME  LD89A  @n7      ; !7 branch
+RENAME  LD8C1  @n1      ; !1 branch
+RENAME  LD8D0  @n2      ; !2 branch
+RENAME  LD8E4  @n3      ; !3 branch
+RENAME  LD939  @n1      ; !1 branch
+RENAME  LD97D  @n2      ; !2 branch
+RENAME  LD980  @n3      ; !3 branch
+RENAME  LD98E  @n4      ; !4 branch
+RENAME  LD98F  @n5      ; !5 branch
+RENAME  LD9CC  @n1      ; !1 branch
+RENAME  LD9F6  @n2      ; !2 branch
+RENAME  LD9F7  @n3      ; !3 branch
+RENAME  LDA0B  @n4      ; !4 branch
+RENAME  LDAA6  @n1      ; !1 branch
+RENAME  LDB11  @n2      ; !2 branch
+RENAME  LDB17  @n3      ; !3 branch
+RENAME  LDB2F  @n4      ; !4 branch
+RENAME  LDB5E  @n5      ; !5 branch
+RENAME  LDC56  @n1      ; !1 branch
+RENAME  LDC72  @n2      ; !2 branch
+RENAME  LDC98  @n3      ; !3 branch
+RENAME  LDCB1  @n4      ; !4 branch
+RENAME  LDCE3  @n5      ; !5 branch
+RENAME  LDCE9  @n6      ; !6 branch
+RENAME  LDD14  @n1      ; !1 branch
+RENAME  LDD1D  @n2      ; !2 branch
+RENAME  LDD2A  @n3      ; !3 branch
+RENAME  LDD3E  @n4      ; !4 branch
+RENAME  LDD58  @n5      ; !5 branch
+RENAME  LDD5A  @n6      ; !6 branch
+RENAME  LDD81  @n7      ; !7 branch
+RENAME  LDD89  @n8      ; !8 branch
+RENAME  LDD8E  @n9      ; !9 branch
+RENAME  LDDBC  @n10     ; !10 branch
+RENAME  LDDD2  @n11     ; !11 branch
+RENAME  LDDEE  @n12     ; !12 branch
+
+# ---------------------------------------------------------------------------
+# SPRITESR.ROU — printsprite, printspriterev, winprintsprite
+# ---------------------------------------------------------------------------
+
+RENAME  LECF4  printsprite ; named entry between printspriterev and printspriteposrev; called from multiple subroutines
+RENAME  LED10  @n2      ; !2  branch in printsprite area
+RENAME  LED1A  @n3      ; !3  branch
+RENAME  LED30  @n4      ; !4  branch
+RENAME  LED3A  @n5      ; !5  branch
+RENAME  LEDBE  @n6      ; !6  branch
+RENAME  LEDC8  @n7      ; !7  branch
+RENAME  LEDCD  @n8      ; !8  branch
+RENAME  LEE2B  @n1      ; !1  winprintsprite branch
+RENAME  LEE4A  @n2      ; !2  branch
+RENAME  LEE4B  @n3      ; !3  branch
+RENAME  LEE58  @n4      ; !4  branch
+RENAME  LEE5E  @n5      ; !5  branch
+RENAME  LEE71  @n6      ; !6  branch
+RENAME  LEE7B  @n7      ; !7  branch
+RENAME  LEE95  @n8      ; !8  branch
+RENAME  LEE9F  @n9      ; !9  branch
+
+# ---------------------------------------------------------------------------
+# PRTMESS.ROU — prtmessage / emptyprintbuffer / addtoprintbuffer
+# ---------------------------------------------------------------------------
+
+RENAME  LEF1A  @n1      ; !1  branch in prtmessage area
+RENAME  LEF26  @n2      ; !2  branch
+RENAME  LEF2B  @n3      ; !3  branch
+RENAME  LEF31  @n4      ; !4  branch
+RENAME  LEF3F  @n5      ; !5  branch
+RENAME  LEF48  @n6      ; !6  branch
+RENAME  LEFA8  @n7      ; !7  branch
+RENAME  LEFB1  @n8      ; !8  branch
+RENAME  LEFCC  @n9      ; !9  branch
+RENAME  LEFF1  @n10     ; !10 branch
+RENAME  LEFF2  @n11     ; !11 branch
+
+# ---------------------------------------------------------------------------
+# PRTROBIN.ROU — emptyprintbuffer / prtmessage
+# ---------------------------------------------------------------------------
+
+RENAME  LF05C  @n1      ; !1  branch
+RENAME  LF078  @n2      ; !2  branch
+RENAME  LF087  @fly     ; flybackvar inner bpl in prtmessage area
+RENAME  LF0A6  @n3      ; !3  branch
+
+# ---------------------------------------------------------------------------
+# GENERAL.ROU — sendspriteblock, clearspriteblock, various
+# ---------------------------------------------------------------------------
+
+RENAME  LF129  @n1      ; !1  branch in sendspriteblock area
+RENAME  LF177  @fly     ; flybackvar inner bpl in addtoprintbuffer / sendspriteblock
+RENAME  LF358  readkeys_n1 ; !1  branch (readkeypads area — global; XTRACONT data at $D373 references $F358 as abs addr)
+RENAME  LF3DA  @n1      ; !1  branch (generalkeytest)
+RENAME  LF3DB  @n2      ; !2  branch
+RENAME  LF3F0  @n3      ; !3  branch
+RENAME  LF3FC  @n4      ; !4  branch
+RENAME  LF401  @n5      ; !5  branch
+RENAME  LF457  @n1      ; !1  branch (checkforpausekey area)
+RENAME  LF470  @fly     ; flybackvar inner bpl in turninteron1
+RENAME  LF49F  @fly     ; flybackvar inner bpl in fadeoffscreen
+RENAME  LF4AE  @fly     ; flybackvar inner bpl in turninteroff
+RENAME  LF4EA  @n1      ; !1  branch
+RENAME  LF4F4  @n2      ; !2  branch
+RENAME  LF508  @n3      ; !3  branch
+RENAME  LF50D  @n4      ; !4  branch
+RENAME  LF51A  @n5      ; !5  branch (checkforpausekey)
+RENAME  LF51C  @n6      ; !6  branch
+RENAME  LF54A  @n1      ; !1  branch (generalkeytest inner)
+RENAME  LF571  @loop    ; !2  resetscore: dey/bpl loop body
+
+# ---------------------------------------------------------------------------
+# GENERAL.ROU — printlives, printscore, addtoscore, resetscore
+# ---------------------------------------------------------------------------
+
+RENAME  LF596  @n2      ; !2  addtohearts: loop (bne !2)
+RENAME  LF5F4  @n3      ; !3  printhearts: loop start
+RENAME  LF602  @n2      ; !2  printhearts: inner loop body
+RENAME  LF62B  @n1      ; !1  printhearts: rts
+
+# ---------------------------------------------------------------------------
+# GENERAL.ROU — waitforstartkey / setxscroll
+# ---------------------------------------------------------------------------
+
+# LF660 is a CROSS-SUBROUTINE target (main loop branches here) — keep as-is
+# LF666/LF668 must be global: LF660 sits between refs (F645-F65E) and defs (F666/F668)
+RENAME  LF666  wfsk_n1  ; !1  waitforstartkey: inner branch (global; LF660 breaks scope)
+RENAME  LF668  wfsk_ret ; !2  waitforstartkey: rts (global; LF660 breaks scope)
+
+# setxscroll
+RENAME  LF69A  @n1      ; !1  setxscroll: sta address2+1 / !2 continuation
+RENAME  LF6DA  @n1      ; !1  printmapdownside comparison
+RENAME  LF6E6  @n2      ; !2  printmapdownside: jmp setmapset path (no PDS local — cross-sub jmp)
+RENAME  LF6F4  @n1      ; !1  decmapset / setmapset inner
+
+# ---------------------------------------------------------------------------
+# MAPSCROL.ROU — findsolid, findblock, bringonmap
+# ---------------------------------------------------------------------------
+
+# findsolid locals: !1 !2 !3 (LF93E = !3, LF947 = !2)
+RENAME  LF93E  @n3      ; !3  tya add #16 tay pla (findsolid: bpl !3)
+RENAME  LF947  @n2      ; !2  jsr findblock (findsolid: bcc !2)
+
+# bringonmap locals: !1 !3
+RENAME  LF9F2  @n1      ; !1  stx blockx (bringonmap: bpl !1)
+RENAME  LFA09  @n3      ; !3  jsr checkchangedblock1 (bringonmap: bpl !3)
+
+# checkchangedblock / checkchangedblock1
+RENAME  LFA33  @n1      ; !1  lda blockx (checkchangedblock: ldx #$00 then !1)
+RENAME  LFA4D  @n2      ; !2  inx inx inx (checkchangedblock: bne !2)
+RENAME  LFA54  @n3      ; !3  ldx blockx rts (checkchangedblock: beq !3 / bne → !1)
+
+# addachangedblock
+RENAME  LFA66  @n2      ; !2  lda changedblocks,x (addachangedblock: ldx #0 !2)
+RENAME  LFA78  @n3      ; !3  inx inx inx (addachangedblock: bne !3)
+RENAME  LFA81  @n1      ; !1  clc adc changedblockspointer (addachangedblock: beq !1 / bne → !2)
+RENAME  LFA8D  @testcrash ; !1  testcrash macro wait loop (php pha … jmp @testcrash)
+RENAME  LFAA5  @n8      ; !8  lda toplevvar2 (addachangedblock: bne !8 after full-buffer)
+RENAME  LFABF  @n4      ; !4  rts (addachangedblock: bpl !4)
+
+# deleteachangedblock
+RENAME  LFACA  @n1      ; !1  lda changedblocks,x (deleteachangedblock: ldx !1)
+RENAME  LFAD8  @n3      ; !3  lda changedblocks+3,x (deleteachangedblock compact loop)
+RENAME  LFB01  @n2      ; !2  inx inx inx (deleteachangedblock: bne !2)
+RENAME  LFB0A  @n4      ; !4  rts (deleteachangedblock: beq !4)
+
+# printblocktoscreen
+RENAME  LFB2F  @n1      ; !1  clc add attrytable,y (printblocktoscreen: bcc !1)
+RENAME  LFB35  @n12     ; !12 ldx blockpointer (printblocktoscreen flybackvar: jmp !12)
+RENAME  LFB42  @fly     ; flybackvar inner bpl in printblocktoscreen
+RENAME  LFB4E  @n11     ; !11 ldy blockfound (printblocktoscreen: bne !11)
+RENAME  LFBA8  @n3      ; !3  sta temp1 (printblocktoscreen: beq !3)
+RENAME  LFBE0  @n1      ; !1  clc adc #$C0 (printblocktoscreen nowattri: bcc !1)
+
+# ---------------------------------------------------------------------------
+# MAPSCROL.ROU — gointonewmap
+# ---------------------------------------------------------------------------
+
+RENAME  LFC2A  @n9      ; !9  sec sbc mapinfo+2,x (gointonewmap: bcs !9)
+RENAME  LFC48  newmap_n1 ; !1  sta robinxh (gointonewmap: adc robinxh !1 — global; XTRACONT data at $D02B references $FC48 as abs addr)
+RENAME  LFC70  @n2      ; !2  lda gamepallettes,y (gointonewmap: bne !2)
+
+# checkoffscreen / changingscreen
+RENAME  LFCEF  @n1      ; !1  rts (checkoffscreen: bne !1 / jsr setonladdervars)
+
+# changingscreen: doeachmap / possiblemap
+RENAME  LFD42  @n1      ; !1  cmp #$F8 (changingscreen: bcs !1)
+RENAME  LFD48  @n2      ; !2  sta robiny rts (changingscreen: bcc / bne !2)
+RENAME  LFD65  @n1      ; !1  bcs trynextmap (possiblemap: bne !1)
+RENAME  LFD7B  @n2      ; !2  bcc trynextmap (possiblemap: bne → !2)
+
+# LFD96-LFD9A are DATA (mapinfo table entries) — do not rename
+
+# ---------------------------------------------------------------------------
+# MAPSCROL.ROU — second changingscreen copy at $FDF0 area
+# (This is a separate copy of changingscreen for the alternate entry)
+# ---------------------------------------------------------------------------
+
+RENAME  LFDFB  @n1      ; !1  lda $8600,x (second changingscreen copy loop)
+RENAME  LFE02  @n2      ; !2  dec temp9 (second changingscreen: bne !2 / trynextmap)
+RENAME  LFE12  @n1b     ; second copy !1 (cmp #$F8)
+RENAME  LFE18  @n2b     ; second copy !2 (sta robiny rts)
+RENAME  LFE1C  @n1c     ; second copy possiblemap entry
+RENAME  LFE33  @n1d     ; !1  cmp address (second possiblemap bne)
+RENAME  LFE35  @n2c     ; second copy bcs trynextmap
+RENAME  LFE4B  @n2d     ; second copy bcc trynextmap
+
+# LFE66/LFE67/LFE68/LFE6E etc are in garbled data area — skip
+
+# ---------------------------------------------------------------------------
+# ONSCREEN.ROU — local labels
+# ---------------------------------------------------------------------------
+
+# onscrxandy locals
+RENAME  LDFCB  @n1      ; !1 sty temp (loop entry — bpl !1 at $DFFA backward)
+RENAME  LDFF9  @n2      ; !2 dey (loop exit — beq/bne !2 forward branches)
+
+# updatedrillup locals
+RENAME  LE324  @n1      ; !1 ldx address8 (loop body — bcc !1 at $E332 backward)
+
+# standarddrill locals
+RENAME  LE34E  @n1      ; !1 lda onscreencount2,y (beq !1 at $E340)
+
+# printdrillup locals
+RENAME  LE3CF  @n1      ; !1 ldy address9 (bne !1 at $E3B6)
+
+# drillerpatterns table aliases (offsets used directly in ONSCREEN.ROU)
+RENAME  LE3EC  drillerpatterns_1  ; drillerpatterns+1 (lda drillerpatterns+1,x)
+RENAME  LE3ED  drillerpatterns_2  ; drillerpatterns+2 (lda drillerpatterns+2,x)
+
+# missedbat locals
+RENAME  LE463  @n2      ; !2 clc adc #1 (bne !2 at $E458)
+RENAME  LE46D  @n1      ; !1 ldy $2C (bcc !1 at $E461, $E468)
+
+# batxok locals
+RENAME  LE4C9  @n1      ; !1 clc (bpl !1 at $E4C5)
+
+# updaterat locals
+RENAME  LE540  @n1      ; !1 lda onscreencount2,y (bcc !1 at $E536)
+RENAME  LE556  @n4      ; !4 lda onscreencount2,y eor #$80 (beq !4 at $E567)
+RENAME  LE561  @n2      ; !2 lda onscreencount1,y (bmi !2 at $E54C)
+RENAME  LE569  @n3      ; !3 sta onscreencount1,y (bne !3 at $E554)
+
+# movedrat locals (separate scope under movedrat:)
+RENAME  LE59C  @n1      ; !1 clc adc address8 (bpl !1 at $E598)
+RENAME  LE5A2  @n2      ; !2 sec sbc #$10 (bcc !2 at $E59F)
+RENAME  LE5A8  @n3      ; !3 stx $2A (bcs !3 at $E5A5)
+
+# ratnothitwall locals
+RENAME  LE615  @n2      ; !2 jsr pokesprite2by2 (beq !2 at $E611)
+RENAME  LE618  @n1      ; !1 jmp backfromscreenrou (bne !1 at $E5FA)
+
+# printspider locals
+RENAME  LE6A5  @n2      ; !2 lda #$94 (bne !2 at $E699)
+RENAME  LE6B9  @n3      ; !3 stx $2A (bne !3 at $E6A3, beq !3 at $E6B5)
+RENAME  LE6C9  @n4      ; !4 lda address8 (bne !4 at $E6C2)
+RENAME  LE6D5  @n1      ; !1 lda xcoordh (bcs !1 at $E6D0)
+
+# barrelmoving locals
+RENAME  LE77F  @n1      ; !1 lda address7 (bne !1 at $E768)
+
+# movebarrel locals
+RENAME  LE7B7  @n1      ; !1 eor #$FF (bmi !1 at $E7B0)
+RENAME  LE7C3  @n2      ; !2 clc adc $04B2,y (jmp !2 at $E7B4)
+RENAME  LE7E1  @n4      ; !4 rts (bcc !4 at $E7DA)
+RENAME  LE7E2  @n3      ; !3 ldx $04A2,y (beq !3 at $E7AE, bcc !3 at $E7CD)
+RENAME  LE7F1  @n5      ; !5 lda $04B2,y (bne !5 at $E7E8)
+
+# barrelonfloor locals
+RENAME  LE82E  @n1      ; !1 lda $04C2,y (bcc !1 at $E822, bne !1 at $E827)
+
+# donegrav locals
+RENAME  LE855  @n1      ; !1 clc adc #$F8 (bmi !1 at $E84D)
+RENAME  LE858  @n2      ; !2 sta temp (jmp !2 at $E852)
+
+# spritetable aliases (SPRITESR.ROU: spritetable+1, +$100, +$101)
+RENAME  LE8DC  spritetable_1    ; spritetable+1 (hi-byte col, entries 0–127)
+RENAME  LE9DB  spritetable_100  ; spritetable+$100 (lo-byte col, entries 128–255)
+RENAME  LE9DC  spritetable_101  ; spritetable+$101 (hi-byte col, entries 128–255)
+
+# ---------------------------------------------------------------------------
+# bank3 header — lock chip bytes
+# ---------------------------------------------------------------------------
+
+# $C002/$C003: BF909x lock chip bytes used by changebank code at $FFED
+# (dec LC003 → iteration byte; lda LC002; and #$02 → flag byte)
+RENAME  LC002  lock_a   ; bank3_header+2: BF909x flag byte (tested and #$02)
+RENAME  LC003  lock_b   ; bank3_header+3: BF909x iteration byte (decremented)
+
+# ---------------------------------------------------------------------------
+# TIMINGS.ROU data aliases
+# ---------------------------------------------------------------------------
+
+# LC11D = times16hi-1 (used as lda times16hi-1,y in onscrxandy)
+RENAME  LC11D  times16hi_m1  ; times16hi-1 (lda times16hi-1,y in onscrxandy)
+
+# ---------------------------------------------------------------------------
+# ONSCREEN.ROU data dispatch table aliases
+# ---------------------------------------------------------------------------
+
+# LDE53 = ablockrous+1 (hi-byte column of block routine dispatch table)
+RENAME  LDE53  ablockrous_1    ; ablockrous+1 (hi-byte col of block dispatch defw table)
+
+# LDF8F = updatescrrous+1 (hi-byte column of screen object dispatch table)
+RENAME  LDF8F  updatescrrous_1 ; updatescrrous+1 (hi-byte col of onscreen dispatch table)
+
+# ---------------------------------------------------------------------------
+# GENERAL.ROU locals
+# ---------------------------------------------------------------------------
+
+RENAME  LF660  @n2      ; !2 jsr turninteroff1 lda #1 rts (waitforstartkey: beq !2 at $F641)
+
+# ---------------------------------------------------------------------------
+# MAPSCROL.ROU / GENERAL.ROU — times14 table aliases
+# ---------------------------------------------------------------------------
+
+RENAME  LF72C  times14tablelo_1  ; times14tablelo+1 (used as adc LF72C,x)
+RENAME  LF82C  times14tablehi_1  ; times14tablehi+1 (used as adc LF82C,x)
+
+# ---------------------------------------------------------------------------
+# ENDCODE.ROU — changebank stubs at $FFE4
+# ---------------------------------------------------------------------------
+
+# LFFED/@n1 and LFFEF/@n2 must be global: LFFF0 := *+1 (global :=) sits between
+# @n1 definition (FFED) and beq @n1 reference (FFF7), resetting cheap local scope.
+# Also, making LFFED global breaks scope for bcs @n2 at FFE6, so LFFEF must be global too.
+RENAME  LFFED  changebank_n1 ; !1  php clc (changebank entry — global; LFFF0:=*+1 breaks scope)
+RENAME  LFFEF  changebank_n2 ; !2  dec LC003 (changebank inner — global; LFFED above breaks scope)
+LABEL  C284  start  # START.ROU:4
+INLINE  C289  TAIWAN LOCK CHIP SOFTWARE  # START.ROU:10
+INLINE  C356  essentially blacken the screen  # MAINLOOP.ROU:20
+INLINE  C35F  Make sure that the completedgame variable is cleared! We don't want someone to accidentally complete the game without even starting it :) ***  # MAINLOOP.ROU:23
+INLINE  C36A  are we pressing Left + A?  # MAINLOOP.ROU:30
+INLINE  C36C  if not, skip the next part and begin with 3 lives  # MAINLOOP.ROU:31
+INLINE  C36E  else load 4 lives into the x variable :O  # MAINLOOP.ROU:32
+INLINE  C370  store the value that was at x into memory  # MAINLOOP.ROU:35
+INLINE  C374  load 0 into the hearts memory address  # MAINLOOP.ROU:37
+INLINE  C376  resets the player score  # MAINLOOP.ROU:38
+INLINE  C37E  tells the game that robin should be controlled by the player now  # MAINLOOP.ROU:42
+INLINE  C383  copy robin's character data into memory  # MAINLOOP.ROU:45
+INLINE  C390  load the beginning level  # MAINLOOP.ROU:53
+INLINE  C3D7  show the amount of lives on screen  # MAINLOOP.ROU:95
+INLINE  C3DA  show the score at the top of the screen  # MAINLOOP.ROU:96
+INLINE  C3DD  print the hearts on the left of the screen  # MAINLOOP.ROU:97
+INLINE  C43F  robin has died, and needs to respawn  # MAINLOOP.ROU:167
+INLINE  C45D  is the completedgame flag set to 0? If not, go ahead and jump to completedthegame  # MAINLOOP.ROU:196
+INLINE  C461  store the value 255 in the hearts address (have no idea why though)  # MAINLOOP.ROU:198
+INLINE  C463  triggered when the player finishes reading the maid marion message  # MAINLOOP.ROU:199
+INLINE  C46B  put robin in the menu state  # MAINLOOP.ROU:204
+INLINE  C471  allow the player to enter their name  # MAINLOOP.ROU:208
+INLINE  C477  start a new game  # MAINLOOP.ROU:213
+INLINE  C49E  do all sending of chrs etc 1st  # INTERUPT.ROU:12
+NOTE  C4E4  You can disable music by commenting up until pla
+NOTE  C4F5  Comment up until here to disable music
+INLINE  C4FE  supposed exit from interupt service  # INTERUPT.ROU:75
+INLINE  C66D  intro/game over/completed  # CONTROL.ROU:128
+INLINE  C8A4  doneladdercentering  # CONTROL.ROU:388
+INLINE  CBDC  check if hit wall while jumping  # CONTROL.ROU:799
+INLINE  CD85  check for ladder  # CONTROL.ROU:986
+INLINE  CE87  stepped in lava  # CONTROL.ROU:1165
+INLINE  D3FE  collision between robin and fruit using address8  # XTRACONT.ROU:326
+INLINE  D458  bcs not on main screen or on either side screens  # XTRACONT.ROU:380
+INLINE  D46F  new format xl,xh,y,chr,col*16+numofpars,flags+rou,0,0,0,0,0,0,0,0,0,0 ;16 in all  # XTRACONT.ROU:409
+INLINE  D46F  flags  128=keep coord on robin  # XTRACONT.ROU:410
+INLINE  D46F  64 =add gravity  # XTRACONT.ROU:411
+INLINE  D5A0  a=number of door to open  # XTRACONT.ROU:509
+INLINE  D5F4  1st is always robins arrow, the rest are enemies  # XTRACONT.ROU:554
+INLINE  D629  (address9),y  points at >x,<x,y,dir  # XTRACONT.ROU:579
+INLINE  D6C2  arrow hit wall  # XTRACONT.ROU:659
+INLINE  D702  now check collision with robin  # XTRACONT.ROU:691
+INLINE  D708  slight bodge to make them easiler to jump over  # XTRACONT.ROU:693
+INLINE  D730  arrow has hit robin  # XTRACONT.ROU:712
+INLINE  D794  enter with a=number of paras through data,start of times  # XTRACONT.ROU:762
+INLINE  D7BC  format x,y+128*start on,block,on,off,(on,off etc) ;128=start off  # XTRAROUS.ROU:4
+INLINE  D7FC  format X,X,extrano,xstrip,y,speed of arrow,128*height+col*32+num to kill,count,(count,count etc)  # XTRAROUS.ROU:38
+INLINE  D85B  col guard with robin  # XTRAROUS.ROU:86
+INLINE  D89C  decing number of times guard hit  # XTRAROUS.ROU:118
+INLINE  D8B1  large explosion for guard  # XTRAROUS.ROU:127
+INLINE  D8C3  small explosion for guard  # XTRAROUS.ROU:134
+INLINE  D923  lda (address9),y  # XTRAROUS.ROU:182
+INLINE  D92B  lda (address9),y  # XTRAROUS.ROU:186
+INLINE  D940  format X,X,num,>minx,<minx,>maxx,<manx,y  # XTRAROUS.ROU:200
+INLINE  D940  always starts off and min coord  # XTRAROUS.ROU:201
+INLINE  DA50  format X,X,num,>x,<x,X,maxy,miny  # XTRAROUS.ROU:332
+INLINE  DA50  always starts off and min coord  # XTRAROUS.ROU:333
+INLINE  DABF  format X,X,num,xstrip,y  # XTRAROUS.ROU:391
+INLINE  DAEC  start key explosion keys  # XTRAROUS.ROU:413
+INLINE  DB0B  this turns on lifts  # XTRAROUS.ROU:428
+INLINE  DB20  make keys pulse  # XTRAROUS.ROU:440
+INLINE  DB92  spit  # XTRAROUS.ROU:500
+INLINE  DBA4  for spitter  # XTRAROUS.ROU:526
+INLINE  DBA4  enter x,y  # XTRAROUS.ROU:527
+INLINE  DBC5  spit has hit robin  # XTRAROUS.ROU:548
+INLINE  DBCC  format X,X,xstrip,y,speed of arrow,count,(count,count etc)  # XTRAROUS.ROU:555
+INLINE  DC19  format X,X,num,xstrip,y,secret num  # XTRAROUS.ROU:597
+INLINE  DC79  a=num to turn on  # XTRAROUS.ROU:661
+INLINE  E344  beq !2  # ONSCREEN.ROU:546
+INLINE  E346  rts  # ONSCREEN.ROU:547
+INLINE  E3EB  defb waitcount,speed,start in/out  # ONSCREEN.ROU:628
+INLINE  E42F  purposly big collison,was too difficult  # ONSCREEN.ROU:660
+INLINE  E5F2  changing y of collison on rat  # ONSCREEN.ROU:883
+INLINE  E69B  chain  # ONSCREEN.ROU:961
+INLINE  E69D  balls+1  # ONSCREEN.ROU:964
+INLINE  E6A5  spiders web  # ONSCREEN.ROU:966
+INLINE  E6C6  winprintsprite  # ONSCREEN.ROU:981
+INLINE  E773  balls  # ONSCREEN.ROU:1066
+INLINE  EFCD  x=x  y=y A=chr temp=attribute  # SPRITESR.ROU:517
+INLINE  EFEB  x=x  y=y A=chr to start at temp=attribute, this indicates flips  # SPRITESR.ROU:536
+INLINE  EFEB  128=vert  64=hor  # SPRITESR.ROU:537
+INLINE  F0C2  this will always jump  # PRTMESS.ROU:68
+INLINE  F0E2  must always jmp  # PRTMESS.ROU:87
+INLINE  F145  format  addr,addr,len,string  # PRTMESS.ROU:154
+INLINE  F17B  emptys print buffer that was filled by addtoprintbuffer  # PRTMESS.ROU:188
+INLINE  F17B  this should be automatically called on the interupt  # PRTMESS.ROU:189
+INLINE  F17B  however it can just be called if the screen is off  # PRTMESS.ROU:190
+INLINE  F1A8  >chrdata,<chrdata,start,len,bank+128 if char  # UNPACK.ROU:8
+INLINE  F597  a=number of hearts to sub  # GENERAL.ROU:322
+INLINE  F489  start flyback interupt  # GENERAL.ROU:157
+INLINE  F54B  add low nibble of A to  # GENERAL.ROU:275
+INLINE  F54B  (hi nibble)th digit of score 0=100,000   5=1 unit  # GENERAL.ROU:276
+INLINE  F5D6  small robin explosion  # GENERAL.ROU:364
+INLINE  F5CC  startstars   ;large robin explosion  # GENERAL.ROU:360
+INLINE  F63D  equal=keep going round loop  # GENERAL.ROU:412
+INLINE  FD95  mappointer      ,offset,width,paletteused,chrsused  # MAPSCROL.ROU:678

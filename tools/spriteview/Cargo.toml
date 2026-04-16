@@ -1,0 +1,8 @@
+[package]
+name = "spriteview"
+version = "0.1.0"
+edition = "2021"
+description = "Sprite viewer for Super Robin Hood NES"
+
+[dependencies]
+image = "0.25"

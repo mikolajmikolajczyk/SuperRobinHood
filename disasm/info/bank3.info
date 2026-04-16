@@ -1,0 +1,880 @@
+# da65 info file for Bank 3 (fixed at $C000)
+# Enriched with PDS source labels and code/data regions
+
+GLOBAL {
+    STARTADDR $C000;
+    CPU "6502";
+    COMMENTS 4;
+};
+
+SEGMENT { START $C000; END $FFFF; NAME "BANK_3"; };
+
+# --- Zero-page variables (from VARS.PDS + SPRITESR.ROU) ---
+LABEL { NAME "cm_frames"; ADDR $0000; };
+LABEL { NAME "control0"; ADDR $0001; };
+LABEL { NAME "control1"; ADDR $0002; };
+LABEL { NAME "interon"; ADDR $0003; };
+LABEL { NAME "seed"; ADDR $0004; };
+LABEL { NAME "pad"; ADDR $0007; };
+LABEL { NAME "debounce"; ADDR $0008; };
+LABEL { NAME "y_scroll"; ADDR $0009; };
+LABEL { NAME "x_scroll"; ADDR $000A; };
+LABEL { NAME "flyflag"; ADDR $000B; };
+LABEL { NAME "vrampointer"; ADDR $000C; };
+LABEL { NAME "bankno"; ADDR $000D; };
+LABEL { NAME "spriteblockpointer"; ADDR $000E; };
+LABEL { NAME "blockpointer"; ADDR $000F; };
+LABEL { NAME "counter"; ADDR $0010; };
+LABEL { NAME "toplevvar1"; ADDR $0011; };
+LABEL { NAME "toplevvar2"; ADDR $0012; };
+LABEL { NAME "toplevvar3"; ADDR $0013; };
+LABEL { NAME "toplevvar4"; ADDR $0014; };
+LABEL { NAME "toplevvar5"; ADDR $0015; };
+LABEL { NAME "toplevvar6"; ADDR $0016; };
+LABEL { NAME "toplevvar7"; ADDR $0017; };
+LABEL { NAME "toplevvar8"; ADDR $0018; };
+LABEL { NAME "toplevvar9"; ADDR $0019; };
+LABEL { NAME "toplevvar10"; ADDR $001A; };
+LABEL { NAME "address"; ADDR $001B; };
+LABEL { NAME "address1"; ADDR $001D; };
+LABEL { NAME "address2"; ADDR $001F; };
+LABEL { NAME "address3"; ADDR $0021; };
+LABEL { NAME "address4"; ADDR $0023; };
+LABEL { NAME "address5"; ADDR $0025; };
+LABEL { NAME "address6"; ADDR $0027; };
+LABEL { NAME "address7"; ADDR $0029; };
+LABEL { NAME "address8"; ADDR $002B; };
+LABEL { NAME "address9"; ADDR $002D; };
+LABEL { NAME "tempx"; ADDR $002F; };
+LABEL { NAME "tempy"; ADDR $0030; };
+LABEL { NAME "temp"; ADDR $0031; };
+LABEL { NAME "temp1"; ADDR $0032; };
+LABEL { NAME "temp2"; ADDR $0033; };
+LABEL { NAME "temp3"; ADDR $0034; };
+LABEL { NAME "temp4"; ADDR $0035; };
+LABEL { NAME "temp5"; ADDR $0036; };
+LABEL { NAME "temp6"; ADDR $0037; };
+LABEL { NAME "temp7"; ADDR $0038; };
+LABEL { NAME "temp8"; ADDR $0039; };
+LABEL { NAME "temp9"; ADDR $003A; };
+LABEL { NAME "scrxl"; ADDR $003B; };
+LABEL { NAME "scrxh"; ADDR $003C; };
+LABEL { NAME "mapstrip"; ADDR $003D; };
+LABEL { NAME "attripointer"; ADDR $003E; };
+LABEL { NAME "blockattri"; ADDR $003F; };
+LABEL { NAME "mappointer"; ADDR $0040; };
+LABEL { NAME "mapno"; ADDR $0042; };
+LABEL { NAME "solidfound"; ADDR $0043; };
+LABEL { NAME "pause"; ADDR $0044; };
+LABEL { NAME "dontpause"; ADDR $0045; };
+LABEL { NAME "palversion"; ADDR $0046; };
+LABEL { NAME "scrolldir"; ADDR $0047; };
+LABEL { NAME "lives"; ADDR $0048; };
+LABEL { NAME "hearts"; ADDR $0049; };
+LABEL { NAME "heartcounter"; ADDR $004A; };
+LABEL { NAME "noofparas"; ADDR $004B; };
+LABEL { NAME "extravarpointer"; ADDR $004C; };
+LABEL { NAME "fadecounter"; ADDR $004D; };
+LABEL { NAME "fadetemp"; ADDR $004E; };
+LABEL { NAME "heartxl"; ADDR $004F; };
+LABEL { NAME "heartxh"; ADDR $0050; };
+LABEL { NAME "hearty"; ADDR $0051; };
+LABEL { NAME "changedblockspointer"; ADDR $0052; };
+
+# --- Hardware registers ---
+LABEL { NAME "_control0"; ADDR $2000; };
+LABEL { NAME "_control1"; ADDR $2001; };
+LABEL { NAME "_statusreg"; ADDR $2002; };
+LABEL { NAME "_spriteaddr"; ADDR $2003; };
+LABEL { NAME "_scrollcon"; ADDR $2005; };
+LABEL { NAME "_vramaddr"; ADDR $2006; };
+LABEL { NAME "_vramdata"; ADDR $2007; };
+LABEL { NAME "_dmafunc"; ADDR $4014; };
+LABEL { NAME "_kpreg1"; ADDR $4016; };
+# _bank ($FFFE) omitted — conflicts with vec_irq in this bank
+
+# --- RAM constants ---
+LABEL { NAME "vrambuffer"; ADDR $0100; };
+LABEL { NAME "blockbuffer"; ADDR $0170; };
+LABEL { NAME "spriteblock"; ADDR $0200; };
+LABEL { NAME "cm_flags"; ADDR $07FE; };
+LABEL { NAME "cm_powerup"; ADDR $07FF; };
+
+# --- RAM variables ($0300+, from VARS.PDS) ---
+LABEL { NAME "finishedloop"; ADDR $0300; };
+LABEL { NAME "chrfound"; ADDR $0301; };
+LABEL { NAME "blockfound"; ADDR $0302; };
+LABEL { NAME "blockx"; ADDR $0303; };
+LABEL { NAME "blocky"; ADDR $0304; };
+LABEL { NAME "minmap"; ADDR $0305; };
+LABEL { NAME "maxmap"; ADDR $0306; };
+LABEL { NAME "robindx"; ADDR $0307; };
+LABEL { NAME "robinxl"; ADDR $0308; };
+LABEL { NAME "robinxh"; ADDR $0309; };
+LABEL { NAME "robiny"; ADDR $030A; };
+LABEL { NAME "robinonscrx"; ADDR $030B; };
+LABEL { NAME "leftright"; ADDR $030C; };
+LABEL { NAME "oleftright"; ADDR $030D; };
+LABEL { NAME "orobinxl"; ADDR $030E; };
+LABEL { NAME "orobinxh"; ADDR $030F; };
+LABEL { NAME "orobiny"; ADDR $0310; };
+LABEL { NAME "runcount"; ADDR $0311; };
+LABEL { NAME "robinanim"; ADDR $0313; };
+LABEL { NAME "robinfiring"; ADDR $0314; };
+LABEL { NAME "robincrouch"; ADDR $0315; };
+LABEL { NAME "robinheight"; ADDR $0316; };
+LABEL { NAME "robinjumping"; ADDR $0317; };
+LABEL { NAME "robingravity"; ADDR $0318; };
+LABEL { NAME "robinlook"; ADDR $0319; };
+LABEL { NAME "robinladder"; ADDR $031A; };
+LABEL { NAME "robinladdercounter"; ADDR $031B; };
+LABEL { NAME "robininvinc"; ADDR $031C; };
+LABEL { NAME "robinbehind"; ADDR $031D; };
+LABEL { NAME "robinjustjumped"; ADDR $031E; };
+LABEL { NAME "oldxl"; ADDR $031F; };
+LABEL { NAME "oldxh"; ADDR $0320; };
+LABEL { NAME "oldy"; ADDR $0321; };
+LABEL { NAME "oldladder"; ADDR $0322; };
+LABEL { NAME "killed"; ADDR $0323; };
+LABEL { NAME "deadarrowx"; ADDR $0324; };
+LABEL { NAME "deadarrowy"; ADDR $0326; };
+LABEL { NAME "deadarrowcount"; ADDR $0327; };
+LABEL { NAME "animatedoor"; ADDR $0328; };
+LABEL { NAME "doorx"; ADDR $0329; };
+LABEL { NAME "doory"; ADDR $032A; };
+LABEL { NAME "juststartedlife"; ADDR $032B; };
+LABEL { NAME "hipos"; ADDR $032C; };
+LABEL { NAME "ingame"; ADDR $032D; };
+LABEL { NAME "treasures"; ADDR $032E; };
+LABEL { NAME "coinnum"; ADDR $0334; };
+LABEL { NAME "coinnumx"; ADDR $0335; };
+LABEL { NAME "coinnumy"; ADDR $0336; };
+LABEL { NAME "coinnumcount"; ADDR $0337; };
+LABEL { NAME "attributes"; ADDR $0338; };
+LABEL { NAME "completedgame"; ADDR $03A8; };
+LABEL { NAME "extravars"; ADDR $03A9; };
+LABEL { NAME "arrowxl"; ADDR $0429; };
+LABEL { NAME "arrowxh"; ADDR $0431; };
+LABEL { NAME "arrowy"; ADDR $0439; };
+LABEL { NAME "arrowdir"; ADDR $0441; };
+LABEL { NAME "arrowcanon"; ADDR $0449; };
+LABEL { NAME "arrowcounter"; ADDR $0451; };
+LABEL { NAME "spitterxl"; ADDR $0459; };
+LABEL { NAME "spitterxh"; ADDR $045D; };
+LABEL { NAME "spittery"; ADDR $0461; };
+LABEL { NAME "spitterdir"; ADDR $0465; };
+LABEL { NAME "onscreenrou"; ADDR $0481; };
+LABEL { NAME "onscreenxl"; ADDR $0491; };
+LABEL { NAME "onscreenxh"; ADDR $04A1; };
+LABEL { NAME "onscreeny"; ADDR $04B1; };
+LABEL { NAME "onscreencount1"; ADDR $04C1; };
+LABEL { NAME "onscreencount2"; ADDR $04D1; };
+LABEL { NAME "heartstable"; ADDR $04E1; };
+LABEL { NAME "filledblockbuffer"; ADDR $0511; };
+LABEL { NAME "riseup"; ADDR $0512; };
+LABEL { NAME "fadecolours"; ADDR $0513; };
+LABEL { NAME "changedblocks"; ADDR $0533; };
+LABEL { NAME "score"; ADDR $0575; };
+
+# --- Cross-bank references ---
+# Prefixed b1_/b2_ to avoid ca65 symbol conflicts with inline labels in bank1.s/bank2.s
+# bank2 (mapper bank 2)
+LABEL { NAME "b2_cm_logo";           ADDR $8000; };   # CMLOGO.ROU
+LABEL { NAME "b2_smiley";            ADDR $8906; };   # SMILEY.ROU
+# bank1 (BANK13 by PDS numbering, mapper bank 1)
+LABEL { NAME "b1_START_MUSIC";       ADDR $8007; };   # MUSIC1.MUS
+LABEL { NAME "b1_PLAY_MUSIC";        ADDR $8066; };   # MUSIC1.MUS
+LABEL { NAME "b1_trytoentername";    ADDR $9818; };   # HISCORE.ROU
+LABEL { NAME "b1_copyhiscorestoram"; ADDR $9C71; };   # HISCORE.ROU
+LABEL { NAME "b1_titlescreen";       ADDR $9D8A; };   # TITLE.ROU
+LABEL { NAME "b1_pulsecolour";       ADDR $A1B3; };   # TITLE.ROU
+LABEL { NAME "b1_fx_setup";          ADDR $A47E; };   # SOUNDFX.ROU
+LABEL { NAME "b1_fx_play";           ADDR $A52A; };   # SOUNDFX.ROU
+LABEL { NAME "b1_restupdatecoin";    ADDR $A6DA; };   # NEWBITS.ROU
+LABEL { NAME "b1_putinheartbank";    ADDR $A7E8; };   # NEWBITS.ROU
+LABEL { NAME "b1_floatupnumber";     ADDR $A8EE; };   # NEWBITS.ROU
+LABEL { NAME "b1_print6treasures";   ADDR $AAE2; };   # NEWBITS.ROU
+LABEL { NAME "b1_redefinewater";     ADDR $AB6C; };   # NEWBITS.ROU
+LABEL { NAME "b1_updatehearts";      ADDR $AD2D; };   # EXPLODE.ROU
+LABEL { NAME "b1_printrobin";        ADDR $AF95; };   # PRTROBIN.ROU
+LABEL { NAME "b1_printrobin1";       ADDR $AFC5; };   # PRTROBIN.ROU
+
+# --- Bank 3 structure (from PDS source analysis) ---
+
+# BANK14.PDS — header
+LABEL { NAME "bank3_header"; ADDR $C000; };
+LABEL { NAME "bank3_entry"; ADDR $C004; };
+LABEL { NAME "cm_nmi_target"; ADDR $C007; };
+LABEL { NAME "bank_table"; ADDR $C00A; };
+
+# TIMINGS.ROU — lookup tables
+LABEL { NAME "times16lo"; ADDR $C01A; };
+LABEL { NAME "times32tablelo"; ADDR $C0F2; };
+LABEL { NAME "times32tablehi"; ADDR $C100; };
+LABEL { NAME "waterchrs"; ADDR $C10E; };
+LABEL { NAME "times16hi"; ADDR $C11E; };
+LABEL { NAME "multstripby16"; ADDR $C1F6; };
+LABEL { NAME "multstripby16sub"; ADDR $C200; };
+LABEL { NAME "emptyblockbuffer"; ADDR $C212; };
+LABEL { NAME "changebank12rou"; ADDR $C274; };
+LABEL { NAME "changebank13rou"; ADDR $C27C; };
+
+# START.ROU — reset and init
+LABEL { NAME "cm_reset"; ADDR $C284; };
+LABEL { NAME "ghfh"; ADDR $C29A; };
+LABEL { NAME "lock2"; ADDR $C2C0; };
+LABEL { NAME "lock3"; ADDR $C2C6; };
+LABEL { NAME "pastlock"; ADDR $C2CD; };
+LABEL { NAME "pastnops"; ADDR $C2F8; };
+LABEL { NAME "resetrobinvars1"; ADDR $C5A4; };
+LABEL { NAME "clearram"; ADDR $C317; };
+
+# MAINLOOP.ROU — main game loop
+LABEL { NAME "anewgame"; ADDR $C34D; };
+LABEL { NAME "startlives"; ADDR $C364; };
+LABEL { NAME "normal3lives"; ADDR $C370; };
+LABEL { NAME "ingameloop"; ADDR $C393; };
+LABEL { NAME "endofmainloop"; ADDR $C422; };
+LABEL { NAME "nearendofmainloop"; ADDR $C428; };
+LABEL { NAME "moveman"; ADDR $C6BD; };
+LABEL { NAME "theend"; ADDR $C45A; };
+LABEL { NAME "completedthegame"; ADDR $C463; };
+LABEL { NAME "zoominstars"; ADDR $C47A; };
+
+# INTERUPT.ROU — NMI/interrupt handler
+LABEL { NAME "cm_nmi"; ADDR $C493; };
+LABEL { NAME "interupt"; ADDR $C49E; };
+LABEL { NAME "dontdointerupt"; ADDR $C4E4; };
+LABEL { NAME "dointerpause"; ADDR $C4FF; };
+LABEL { NAME "inpausemode"; ADDR $C510; };
+LABEL { NAME "setfade"; ADDR $C511; };
+LABEL { NAME "fadeupcolours"; ADDR $C52A; };
+LABEL { NAME "dofadelp"; ADDR $C548; };
+LABEL { NAME "endfade"; ADDR $C555; };
+LABEL { NAME "backtoblack"; ADDR $C556; };
+LABEL { NAME "allblack"; ADDR $C56C; };
+LABEL { NAME "allblack1"; ADDR $C57C; };
+LABEL { NAME "allblacklp"; ADDR $C57E; };
+LABEL { NAME "fademasks"; ADDR $C587; };
+LABEL { NAME "fade1masks"; ADDR $C58B; };
+
+# CONTROL.ROU — player control
+LABEL { NAME "resetrobinvars"; ADDR $C58F; };
+LABEL { NAME "infinate"; ADDR $C5FA; };
+LABEL { NAME "bob1"; ADDR $C607; };
+LABEL { NAME "copyintreasures"; ADDR $C629; };
+LABEL { NAME "notladder"; ADDR $C6FA; };
+LABEL { NAME "robinnotjumping"; ADDR $C70E; };
+LABEL { NAME "dogravity"; ADDR $CAFB; };
+LABEL { NAME "jumpingok"; ADDR $C748; };
+LABEL { NAME "hitwall"; ADDR $C766; };
+LABEL { NAME "nottryingtojump"; ADDR $C771; };
+LABEL { NAME "nottryingtojump1"; ADDR $C777; };
+LABEL { NAME "movingright"; ADDR $C788; };
+LABEL { NAME "doneleftright"; ADDR $C78D; };
+LABEL { NAME "fallthru"; ADDR $C7CE; };
+LABEL { NAME "floorfound"; ADDR $C800; };
+LABEL { NAME "semifloorfound"; ADDR $C806; };
+LABEL { NAME "ontopofladder"; ADDR $C80E; };
+LABEL { NAME "checkleftrightkeys"; ADDR $C81B; };
+LABEL { NAME "walkoffladder"; ADDR $C84B; };
+LABEL { NAME "jumpoffladderright"; ADDR $C84F; };
+LABEL { NAME "restoffladd"; ADDR $C85B; };
+LABEL { NAME "onladder"; ADDR $C869; };
+LABEL { NAME "checkifstillonladderdown"; ADDR $C90F; };
+LABEL { NAME "stepoffladderdown"; ADDR $C93F; };
+LABEL { NAME "stepoffladderup"; ADDR $C94F; };
+LABEL { NAME "stepoff1"; ADDR $C959; };
+LABEL { NAME "checkifstillonladderup"; ADDR $C96A; };
+LABEL { NAME "checkforladderdown"; ADDR $C9BD; };
+LABEL { NAME "checkforladderup"; ADDR $C9EF; };
+LABEL { NAME "setonladder"; ADDR $CA16; };
+LABEL { NAME "checkladupend"; ADDR $CA1C; };
+LABEL { NAME "setonladdervars"; ADDR $CA1D; };
+LABEL { NAME "docrouchstuff"; ADDR $CA30; };
+LABEL { NAME "dofiring"; ADDR $CA6F; };
+LABEL { NAME "animatelegs"; ADDR $CAA2; };
+LABEL { NAME "restorex"; ADDR $CADD; };
+LABEL { NAME "restorex1"; ADDR $CAE2; };
+LABEL { NAME "dorobinjumping"; ADDR $CBA0; };
+LABEL { NAME "jumpingright"; ADDR $CBF6; };
+LABEL { NAME "findfloor"; ADDR $CD4A; };
+LABEL { NAME "printlives"; ADDR $F4DE; };
+LABEL { NAME "clearfullspriteblock"; ADDR $F402; };
+LABEL { NAME "notjumpingleftorright"; ADDR $CC0C; };
+LABEL { NAME "addleftright"; ADDR $CC0D; };
+LABEL { NAME "addleftright1"; ADDR $CC12; };
+LABEL { NAME "restleftright"; ADDR $CC47; };
+LABEL { NAME "runtablelo"; ADDR $CCC9; };
+LABEL { NAME "findwallleft"; ADDR $CCF9; };
+LABEL { NAME "restwall"; ADDR $CD06; };
+LABEL { NAME "findwallright"; ADDR $CD3A; };
+LABEL { NAME "findroof"; ADDR $CD91; };
+LABEL { NAME "findroofleft"; ADDR $CD9E; };
+LABEL { NAME "findroofright"; ADDR $CDB1; };
+LABEL { NAME "movebackcrouchedunder"; ADDR $CDC4; };
+LABEL { NAME "slidebackright"; ADDR $CDF0; };
+LABEL { NAME "slidingneg"; ADDR $CE02; };
+LABEL { NAME "slidebackleft"; ADDR $CE29; };
+LABEL { NAME "setcrouch"; ADDR $CE31; };
+LABEL { NAME "endcrouch"; ADDR $CE36; };
+LABEL { NAME "storeoutoldrobin"; ADDR $CE37; };
+LABEL { NAME "dontstoreold"; ADDR $CE4F; };
+LABEL { NAME "restoreoldrobin"; ADDR $CE50; };
+LABEL { NAME "checkrobinbehind"; ADDR $CE6E; };
+
+# XTRACONT.ROU — extras/enemy control
+LABEL { NAME "putextrason"; ADDR $CE9A; };
+LABEL { NAME "anotherrou"; ADDR $CEAC; };
+LABEL { NAME "backfromrou"; ADDR $CEC7; };
+LABEL { NAME "backfromrounovars"; ADDR $CECC; };
+LABEL { NAME "endofrous"; ADDR $CEDA; };
+LABEL { NAME "maprouspointer"; ADDR $CEFA; };
+LABEL { NAME "routinepointers"; ADDR $CF14; };
+LABEL { NAME "doordata"; ADDR $D395; };
+LABEL { NAME "resetextravars"; ADDR $D3C8; };
+LABEL { NAME "resetextras"; ADDR $D3E4; };
+LABEL { NAME "pickupcollision1"; ADDR $D3F9; };
+LABEL { NAME "pickupcollision"; ADDR $D3FE; };
+LABEL { NAME "crouchcollide"; ADDR $D410; };
+LABEL { NAME "nowthex"; ADDR $D41B; };
+LABEL { NAME "nopickcoll"; ADDR $D426; };
+LABEL { NAME "bitpattern"; ADDR $D427; };
+LABEL { NAME "checkifextraon"; ADDR $D42F; };
+LABEL { NAME "checkifdooron"; ADDR $D431; };
+LABEL { NAME "turnoffextra"; ADDR $D441; };
+LABEL { NAME "turnoffdoor"; ADDR $D445; };
+LABEL { NAME "checkonscreensides"; ADDR $D458; };
+LABEL { NAME "checkonscreensides1"; ADDR $D45A; };
+LABEL { NAME "startstarstable"; ADDR $D46F; };
+LABEL { NAME "startstars"; ADDR $D4EF; };
+LABEL { NAME "smiley"; ADDR $D4FF; };
+LABEL { NAME "gotstarsx"; ADDR $D508; };
+LABEL { NAME "doorrou"; ADDR $D533; };
+LABEL { NAME "overboundry"; ADDR $D55A; };
+LABEL { NAME "finishdoor"; ADDR $D566; };
+LABEL { NAME "donedoor"; ADDR $D572; };
+LABEL { NAME "enddoor"; ADDR $D575; };
+LABEL { NAME "closedoor"; ADDR $D576; };
+LABEL { NAME "openadoor"; ADDR $D5A0; };
+LABEL { NAME "openadoor1"; ADDR $D5A5; };
+LABEL { NAME "resetdoorsintomap"; ADDR $D5D4; };
+LABEL { NAME "robinshootarrow"; ADDR $D5F4; };
+LABEL { NAME "shootarrow"; ADDR $D629; };
+LABEL { NAME "gotarrowpos"; ADDR $D638; };
+LABEL { NAME "addarrowdir"; ADDR $D666; };
+LABEL { NAME "updatearrows"; ADDR $D68D; };
+LABEL { NAME "doeacharrow"; ADDR $D68F; };
+LABEL { NAME "contarrow"; ADDR $D69C; };
+LABEL { NAME "printarrow"; ADDR $D69F; };
+LABEL { NAME "takearrowoff"; ADDR $D6C2; };
+LABEL { NAME "takearrowoff1"; ADDR $D6C7; };
+LABEL { NAME "arrownothitwall"; ADDR $D6CF; };
+LABEL { NAME "isanarrow"; ADDR $D6F8; };
+LABEL { NAME "nextarrow"; ADDR $D736; };
+LABEL { NAME "takearrowoffrou"; ADDR $D763; };
+LABEL { NAME "dectiming"; ADDR $D783; };
+LABEL { NAME "dotimingproblem"; ADDR $D794; };
+
+# XTRAROUS.ROU — extras/enemy routines
+LABEL { NAME "flashblock"; ADDR $D7BC; };
+LABEL { NAME "turnblockoff"; ADDR $D7EF; };
+LABEL { NAME "endflashblock"; ADDR $D7F2; };
+LABEL { NAME "standguard"; ADDR $D7FC; };
+LABEL { NAME "printtheguard"; ADDR $D84B; };
+// clearfullspriteblock was erroneously placed at $D895 — correct addr $F402 added above
+LABEL { NAME "veryendstandguard"; ADDR $D904; };
+LABEL { NAME "guardturnedoff"; ADDR $D909; };
+LABEL { NAME "guardcolours"; ADDR $D90E; };
+LABEL { NAME "collidewitharrow"; ADDR $D917; };
+LABEL { NAME "collidebatwitharrow"; ADDR $D923; };
+LABEL { NAME "notcollidewitharrow"; ADDR $D93F; };
+LABEL { NAME "platformh"; ADDR $D940; };
+LABEL { NAME "platmovingright"; ADDR $D9A3; };
+LABEL { NAME "platnotmoving"; ADDR $D9AB; };
+LABEL { NAME "endplatformh"; ADDR $D9AE; };
+LABEL { NAME "collplatwithrob"; ADDR $D9B3; };
+LABEL { NAME "checkifplaton"; ADDR $D9CD; };
+LABEL { NAME "moveplatformh"; ADDR $D9FA; };
+LABEL { NAME "plathminus"; ADDR $DA0E; };
+LABEL { NAME "movedplath"; ADDR $DA1D; };
+LABEL { NAME "reverseplatdir"; ADDR $DA2C; };
+LABEL { NAME "printplatform"; ADDR $DA34; };
+LABEL { NAME "platformv"; ADDR $DA50; };
+LABEL { NAME "endplatformv"; ADDR $DA74; };
+LABEL { NAME "moveplatformv"; ADDR $DA79; };
+LABEL { NAME "plathminusv"; ADDR $DA8D; };
+LABEL { NAME "movedplathv"; ADDR $DA92; };
+LABEL { NAME "robinjumpoffplatform"; ADDR $DA9B; };
+LABEL { NAME "endjumpoffplatform"; ADDR $DABE; };
+LABEL { NAME "keyrou"; ADDR $DABF; };
+LABEL { NAME "updatespitters"; ADDR $DB32; };
+LABEL { NAME "loopspit"; ADDR $DB41; };
+LABEL { NAME "takespitoff1"; ADDR $DB99; };
+LABEL { NAME "endloopspit"; ADDR $DB9E; };
+LABEL { NAME "checkchrcollision"; ADDR $DBA4; };
+LABEL { NAME "spitnocollision"; ADDR $DBCA; };
+LABEL { NAME "canonrou"; ADDR $DBCC; };
+LABEL { NAME "endcanon"; ADDR $DBF1; };
+LABEL { NAME "veryendcanon"; ADDR $DC0F; };
+LABEL { NAME "secretrou"; ADDR $DC19; };
+LABEL { NAME "doallsecrets"; ADDR $DC59; };
+LABEL { NAME "secretloop"; ADDR $DC5B; };
+LABEL { NAME "turnonsecret"; ADDR $DC79; };
+LABEL { NAME "dosecret"; ADDR $DC8A; };
+LABEL { NAME "marionrou"; ADDR $DCB8; };
+LABEL { NAME "checkrobinanim"; ADDR $DCF8; };
+LABEL { NAME "alreadyanim"; ADDR $DD20; };
+LABEL { NAME "printrobinend"; ADDR $DD2D; };
+LABEL { NAME "printmarion"; ADDR $DD9D; };
+LABEL { NAME "fireworkdisplay"; ADDR $DDAB; };
+LABEL { NAME "doheart"; ADDR $DDF1; };
+
+# ONSCREEN.ROU — on-screen object updates
+LABEL { NAME "checkaddflamesetc"; ADDR $DE12; };
+LABEL { NAME "findaspace"; ADDR $DE2C; };
+LABEL { NAME "findaspace1"; ADDR $DE31; };
+LABEL { NAME "putinnowt"; ADDR $DE34; };
+LABEL { NAME "gotspaceonscreen"; ADDR $DE35; };
+LABEL { NAME "ablockrous"; ADDR $DE52; };
+LABEL { NAME "blockrous"; ADDR $DE70; };
+LABEL { NAME "updateonscreens"; ADDR $DF70; };
+LABEL { NAME "doupdates"; ADDR $DF72; };
+LABEL { NAME "backfromscreenrou"; ADDR $DF8A; };
+LABEL { NAME "backfromscreenrou1"; ADDR $DF8C; };
+LABEL { NAME "updatescrrous"; ADDR $DF8E; };
+LABEL { NAME "onscrxandy0"; ADDR $DFAC; };
+LABEL { NAME "onscrxandy"; ADDR $DFAE; };
+LABEL { NAME "putinflames"; ADDR $DFFD; };
+LABEL { NAME "addflame"; ADDR $E01A; };
+LABEL { NAME "putinspit"; ADDR $E01D; };
+LABEL { NAME "putineyes"; ADDR $E035; };
+LABEL { NAME "dontputinonscreen"; ADDR $E048; };
+LABEL { NAME "putindrip"; ADDR $E050; };
+LABEL { NAME "firestable"; ADDR $E06B; };
+LABEL { NAME "putintramp"; ADDR $E06F; };
+LABEL { NAME "putindrillup"; ADDR $E074; };
+LABEL { NAME "putindriller"; ADDR $E07F; };
+LABEL { NAME "putindrilldown"; ADDR $E091; };
+LABEL { NAME "putinbat"; ADDR $E09F; };
+LABEL { NAME "morebats"; ADDR $E0A1; };
+LABEL { NAME "putincanceldouble"; ADDR $E0B8; };
+LABEL { NAME "batok"; ADDR $E0C1; };
+LABEL { NAME "putinrat"; ADDR $E0F1; };
+LABEL { NAME "rattable"; ADDR $E105; };
+LABEL { NAME "putinspider"; ADDR $E109; };
+LABEL { NAME "putinbarrel"; ADDR $E116; };
+LABEL { NAME "putinblock"; ADDR $E140; };
+LABEL { NAME "putinheart"; ADDR $E143; };
+LABEL { NAME "putincoin"; ADDR $E14A; };
+LABEL { NAME "putinheartbit"; ADDR $E14F; };
+LABEL { NAME "calconscreenx"; ADDR $E156; };
+LABEL { NAME "outofscreen"; ADDR $E168; };
+LABEL { NAME "updateflames"; ADDR $E17F; };
+LABEL { NAME "updatespit"; ADDR $E1A7; };
+LABEL { NAME "findspitterslot"; ADDR $E1B6; };
+LABEL { NAME "gotspitter"; ADDR $E1C0; };
+LABEL { NAME "endspitter"; ADDR $E1E0; };
+LABEL { NAME "spitdelay"; ADDR $E1E3; };
+LABEL { NAME "updateeyes"; ADDR $E1EB; };
+LABEL { NAME "updatedrips"; ADDR $E225; };
+LABEL { NAME "firehappening"; ADDR $E23E; };
+LABEL { NAME "enddrips"; ADDR $E274; };
+LABEL { NAME "firetable"; ADDR $E277; };
+LABEL { NAME "updatetramp"; ADDR $E27F; };
+LABEL { NAME "endtramp"; ADDR $E2CC; };
+LABEL { NAME "updatedrilldown"; ADDR $E2EB; };
+LABEL { NAME "enddrilldown"; ADDR $E310; };
+LABEL { NAME "updatedrillup"; ADDR $E313; };
+LABEL { NAME "enddrillup"; ADDR $E334; };
+LABEL { NAME "standarddrill"; ADDR $E337; };
+LABEL { NAME "movingdrill"; ADDR $E37A; };
+LABEL { NAME "drillcomingdown"; ADDR $E38E; };
+LABEL { NAME "contdrill"; ADDR $E3A8; };
+LABEL { NAME "printdrillup"; ADDR $E3B3; };
+LABEL { NAME "drillerpatterns"; ADDR $E3EB; };
+LABEL { NAME "updatebat"; ADDR $E403; };
+LABEL { NAME "batnotmoving"; ADDR $E40C; };
+LABEL { NAME "turnoffbat"; ADDR $E442; };
+LABEL { NAME "missedbat"; ADDR $E453; };
+LABEL { NAME "movebat"; ADDR $E480; };
+LABEL { NAME "batnegx"; ADDR $E4A3; };
+LABEL { NAME "doxbatchr"; ADDR $E4AC; };
+LABEL { NAME "batxok"; ADDR $E4C0; };
+LABEL { NAME "nowbaty"; ADDR $E4D7; };
+LABEL { NAME "batnegy"; ADDR $E4E9; };
+LABEL { NAME "batyok"; ADDR $E505; };
+LABEL { NAME "batwobble"; ADDR $E523; };
+LABEL { NAME "updaterat"; ADDR $E52B; };
+LABEL { NAME "movedrat"; ADDR $E56C; };
+LABEL { NAME "rathitwall"; ADDR $E5CA; };
+LABEL { NAME "ratnothitwall"; ADDR $E5D2; };
+LABEL { NAME "updatespider"; ADDR $E61B; };
+LABEL { NAME "spidergoingdown"; ADDR $E659; };
+LABEL { NAME "spiderchange"; ADDR $E67E; };
+LABEL { NAME "movedspider"; ADDR $E686; };
+LABEL { NAME "printspider"; ADDR $E694; };
+LABEL { NAME "drawchain"; ADDR $E6E8; };
+LABEL { NAME "endspider"; ADDR $E706; };
+LABEL { NAME "updatebarrel"; ADDR $E709; };
+LABEL { NAME "turnoffdouble"; ADDR $E720; };
+LABEL { NAME "dontturnoffbarrel"; ADDR $E72B; };
+LABEL { NAME "barrelmoving"; ADDR $E74B; };
+LABEL { NAME "endbarrel"; ADDR $E78F; };
+LABEL { NAME "movebarrel"; ADDR $E792; };
+LABEL { NAME "barrelonfloor"; ADDR $E81B; };
+LABEL { NAME "storegrav"; ADDR $E839; };
+LABEL { NAME "donegrav"; ADDR $E83C; };
+LABEL { NAME "barrelnothitwall"; ADDR $E882; };
+LABEL { NAME "barrelhitrobin"; ADDR $E8B9; };
+LABEL { NAME "endbarrelmove"; ADDR $E8C5; };
+LABEL { NAME "updateblock"; ADDR $E8C6; };
+LABEL { NAME "updateheart"; ADDR $E8CC; };
+
+# SPRITESD.DAT — sprite pointer table + definitions
+LABEL { NAME "spritetable"; ADDR $E8DB; };
+# Sprite definitions (sorted by address)
+LABEL { NAME "spr_codemasterlogo"; ADDR $E95F; };
+LABEL { NAME "spr_cm_chrdata0"; ADDR $E97C; };
+LABEL { NAME "spr_cm_chrdata1"; ADDR $E981; };
+LABEL { NAME "spr_cm_chrdata2"; ADDR $E987; };
+LABEL { NAME "spr_cm_chrdata3"; ADDR $E98E; };
+LABEL { NAME "spr_cm_chrdata4"; ADDR $E995; };
+LABEL { NAME "spr_cm_chrdata5"; ADDR $E99B; };
+LABEL { NAME "spr_camericalogo"; ADDR $E9A3; };
+LABEL { NAME "spr_cam_chrdata0"; ADDR $E9AD; };
+LABEL { NAME "spr_cam_chrdata1"; ADDR $E9B8; };
+LABEL { NAME "spr_pressstart"; ADDR $E9C4; };
+LABEL { NAME "spr_ps_chrdata0"; ADDR $E9CC; };
+LABEL { NAME "spr_ps_chrdata1"; ADDR $E9D2; };
+LABEL { NAME "spr_head0"; ADDR $E9D9; };
+LABEL { NAME "spr_head1"; ADDR $E9DE; };
+LABEL { NAME "spr_head2"; ADDR $E9E3; };
+LABEL { NAME "spr_head3"; ADDR $E9E8; };
+LABEL { NAME "spr_robinbody0"; ADDR $E9ED; };
+LABEL { NAME "spr_robinbody1"; ADDR $E9F3; };
+LABEL { NAME "spr_robinbody2"; ADDR $E9F9; };
+LABEL { NAME "spr_robinbody3"; ADDR $E9FF; };
+LABEL { NAME "spr_robinbody4"; ADDR $EA04; };
+LABEL { NAME "spr_robinbody5"; ADDR $EA09; };
+LABEL { NAME "spr_robinbody6"; ADDR $EA0F; };
+LABEL { NAME "spr_robinstanding"; ADDR $EA30; };
+LABEL { NAME "spr_bodyfire0"; ADDR $EA3D; };
+LABEL { NAME "spr_bodyfire1"; ADDR $EA57; };
+LABEL { NAME "spr_bodyfire2"; ADDR $EA68; };
+LABEL { NAME "spr_bodyfire3"; ADDR $EA79; };
+LABEL { NAME "spr_legsrun0"; ADDR $EA8A; };
+LABEL { NAME "spr_legsrun1"; ADDR $EA9B; };
+LABEL { NAME "spr_legsrun2"; ADDR $EAA9; };
+LABEL { NAME "spr_legsrun3"; ADDR $EAAE; };
+LABEL { NAME "spr_legsrun4"; ADDR $EABB; };
+LABEL { NAME "spr_legsrun5"; ADDR $EACC; };
+LABEL { NAME "spr_legsrun6"; ADDR $EADA; };
+LABEL { NAME "spr_legsstanding"; ADDR $EAE5; };
+LABEL { NAME "spr_legsjumping"; ADDR $EAEA; };
+LABEL { NAME "spr_bodyonladder"; ADDR $EAFB; };
+LABEL { NAME "spr_legsonladder"; ADDR $EB04; };
+LABEL { NAME "spr_bodyfullcrouch"; ADDR $EB0E; };
+LABEL { NAME "spr_legsfullcrouch"; ADDR $EB1F; };
+LABEL { NAME "spr_legshalfcrouch"; ADDR $EB24; };
+LABEL { NAME "spr_barrel0"; ADDR $EB31; };
+LABEL { NAME "spr_barrel1"; ADDR $EB42; };
+LABEL { NAME "spr_barrel2"; ADDR $EB53; };
+LABEL { NAME "spr_canon"; ADDR $EB64; };
+LABEL { NAME "spr_platform"; ADDR $EB6A; };
+LABEL { NAME "spr_trampet0"; ADDR $EB70; };
+LABEL { NAME "spr_trampet1"; ADDR $EB81; };
+LABEL { NAME "spr_spider0"; ADDR $EB8A; };
+LABEL { NAME "spr_spider1"; ADDR $EB95; };
+LABEL { NAME "spr_bat0"; ADDR $EBA6; };
+LABEL { NAME "spr_bat1"; ADDR $EBAF; };
+LABEL { NAME "spr_deadarrow0"; ADDR $EBC6; };
+LABEL { NAME "spr_deadarrow1"; ADDR $EBD7; };
+LABEL { NAME "spr_deadarrow2"; ADDR $EBE8; };
+LABEL { NAME "spr_deadarrow3"; ADDR $EBF9; };
+LABEL { NAME "spr_eye0"; ADDR $EC0A; };
+LABEL { NAME "spr_eye1"; ADDR $EC13; };
+LABEL { NAME "spr_eye2"; ADDR $EC1C; };
+LABEL { NAME "spr_eye3"; ADDR $EC25; };
+LABEL { NAME "spr_guardlow"; ADDR $EC2E; };
+LABEL { NAME "spr_guardbody"; ADDR $EC39; };
+LABEL { NAME "spr_guardhigh"; ADDR $EC41; };
+LABEL { NAME "spr_guardbody1"; ADDR $EC4C; };
+LABEL { NAME "spr_guardlow1"; ADDR $EC54; };
+LABEL { NAME "spr_guardhigh1"; ADDR $EC61; };
+LABEL { NAME "spr_guardbody2"; ADDR $EC71; };
+LABEL { NAME "spr_guardbody3"; ADDR $EC76; };
+LABEL { NAME "spr_fire0"; ADDR $EC7A; };
+LABEL { NAME "spr_fire1"; ADDR $EC7F; };
+LABEL { NAME "spr_fire2"; ADDR $EC90; };
+LABEL { NAME "spr_fire3"; ADDR $ECA1; };
+LABEL { NAME "spr_fire4"; ADDR $ECAE; };
+LABEL { NAME "spr_marion"; ADDR $ECBB; };
+LABEL { NAME "spr_marion_chr1"; ADDR $ECC9; };
+LABEL { NAME "spr_marion_chr2"; ADDR $ECCD; };
+LABEL { NAME "spr_marion_chr3"; ADDR $ECD1; };
+LABEL { NAME "spr_pausespr"; ADDR $ECD8; };
+LABEL { NAME "spr_coindata"; ADDR $EBBC; };
+LABEL { NAME "spr_canondata"; ADDR $EBBF; };
+LABEL { NAME "spr_platdata"; ADDR $EBC3; };
+
+# SPRITESR.ROU — sprite rendering
+LABEL { NAME "printspriterev"; ADDR $ECF1; };
+LABEL { NAME "printspriteposrev"; ADDR $ECF5; };
+LABEL { NAME "PP1_UNPACK"; ADDR $ED9A; };
+LABEL { NAME "eachfrminspritelp"; ADDR $ED28; };
+LABEL { NAME "notvert"; ADDR $ED46; };
+LABEL { NAME "nothor"; ADDR $ED50; };
+LABEL { NAME "nodisplacements"; ADDR $ED61; };
+LABEL { NAME "nottwobytwo"; ADDR $ED7E; };
+LABEL { NAME "mustbespr"; ADDR $ED91; };
+LABEL { NAME "mustbejustchr"; ADDR $EDAB; };
+LABEL { NAME "notflippedover"; ADDR $EDDB; };
+LABEL { NAME "yspritelp"; ADDR $EDE6; };
+LABEL { NAME "xspritelp"; ADDR $EDEE; };
+LABEL { NAME "nomorespritechrsleft"; ADDR $EE1F; };
+LABEL { NAME "frmtimes8"; ADDR $EE2C; };
+LABEL { NAME "playermask"; ADDR $EE36; };
+LABEL { NAME "winprintsprite"; ADDR $EE3A; };
+LABEL { NAME "winprintspriteposrev"; ADDR $EE3B; };
+LABEL { NAME "wineachfrminspritelp"; ADDR $EE89; };
+LABEL { NAME "winnotvert"; ADDR $EEAB; };
+LABEL { NAME "winnothor"; ADDR $EEB5; };
+LABEL { NAME "winnodisplacements"; ADDR $EEC6; };
+LABEL { NAME "winnottwobytwo"; ADDR $EEE3; };
+LABEL { NAME "winmustbespr"; ADDR $EEF6; };
+LABEL { NAME "winmustbejustchr"; ADDR $EF10; };
+LABEL { NAME "aroundaddx"; ADDR $EF51; };
+LABEL { NAME "winnotflippedover"; ADDR $EF5A; };
+LABEL { NAME "winyspritelp"; ADDR $EF65; };
+LABEL { NAME "winxspritelp"; ADDR $EF71; };
+LABEL { NAME "winthischrnotonscreen"; ADDR $EF95; };
+LABEL { NAME "winnomorespritechrsleft"; ADDR $EFC0; };
+LABEL { NAME "pokesprite"; ADDR $EFCD; };
+LABEL { NAME "nomorespriteplaces"; ADDR $EFEA; };
+LABEL { NAME "pokesprite2by2"; ADDR $EFEB; };
+LABEL { NAME "flippedvert"; ADDR $F030; };
+LABEL { NAME "nowhor"; ADDR $F043; };
+LABEL { NAME "flippedhor"; ADDR $F065; };
+LABEL { NAME "done2by2"; ADDR $F07E; };
+
+# PRTMESS.ROU — message printing
+LABEL { NAME "prtmessagefly"; ADDR $F085; };
+LABEL { NAME "prtmessage"; ADDR $F08B; };
+LABEL { NAME "printwhatataddress"; ADDR $F08F; };
+LABEL { NAME "printwhatataddress1"; ADDR $F091; };
+LABEL { NAME "notchr"; ADDR $F09D; };
+LABEL { NAME "printwhatataddress2"; ADDR $F0C1; };
+LABEL { NAME "mustbeaddress"; ADDR $F0C4; };
+LABEL { NAME "setstringlen"; ADDR $F0D5; };
+LABEL { NAME "stringlen1"; ADDR $F0D9; };
+LABEL { NAME "startloop"; ADDR $F0E4; };
+LABEL { NAME "repeatingloop"; ADDR $F0E7; };
+LABEL { NAME "endloop"; ADDR $F0ED; };
+LABEL { NAME "gosub"; ADDR $F0FC; };
+LABEL { NAME "downlinerou"; ADDR $F11D; };
+LABEL { NAME "joindownline"; ADDR $F11F; };
+LABEL { NAME "attrdownrou"; ADDR $F134; };
+LABEL { NAME "jumpnewmessagejump"; ADDR $F138; };
+LABEL { NAME "addtoprintbuffer"; ADDR $F145; };
+LABEL { NAME "addtoprintbufferlp"; ADDR $F164; };
+LABEL { NAME "emptyprintbuffer"; ADDR $F17B; };
+LABEL { NAME "veryfastprintout"; ADDR $F181; };
+LABEL { NAME "stringlen"; ADDR $F195; };
+LABEL { NAME "retmessage"; ADDR $F1A7; };
+LABEL { NAME "compactedchrstable"; ADDR $F1A8; };
+LABEL { NAME "copyblockofcompactedchrs"; ADDR $F1E0; };
+LABEL { NAME "pp1_download3"; ADDR $F222; };
+LABEL { NAME "pp1_download2"; ADDR $F235; };
+LABEL { NAME "pp1_download"; ADDR $F239; };
+LABEL { NAME "pp1_unpack"; ADDR $F23B; };
+LABEL { NAME "pp1_chrloop"; ADDR $F248; };
+LABEL { NAME "pp1_gotheader"; ADDR $F27C; };
+LABEL { NAME "pp1_getline"; ADDR $F27E; };
+LABEL { NAME "pp1_gotline"; ADDR $F2E5; };
+LABEL { NAME "pp1_getc"; ADDR $F305; };
+LABEL { NAME "pp1_getq"; ADDR $F30A; };
+LABEL { NAME "pp1_get2"; ADDR $F315; };
+LABEL { NAME "pp1_t1"; ADDR $F33A; };
+LABEL { NAME "pp1_t3"; ADDR $F350; };
+LABEL { NAME "pp1_f1l"; ADDR $F38B; };
+LABEL { NAME "pp1_f2h"; ADDR $F38F; };
+
+# UNPACK.ROU — data tables (compacted chr/font)
+LABEL { NAME "PP1_FC3"; ADDR $F381; };
+LABEL { NAME "PP1_FC2"; ADDR $F384; };
+LABEL { NAME "PP1_FC1"; ADDR $F387; };
+
+# GENERAL.ROU — general utility routines
+LABEL { NAME "readkeypads"; ADDR $F393; };
+LABEL { NAME "padloop2"; ADDR $F3A2; };
+LABEL { NAME "random"; ADDR $F3AC; };
+LABEL { NAME "generalkeytest"; ADDR $F3CA; };
+LABEL { NAME "checkforpausekey"; ADDR $F3DE; };
+LABEL { NAME "sendspriteblock"; ADDR $F407; };
+LABEL { NAME "turnofftune"; ADDR $F412; };
+LABEL { NAME "starttune"; ADDR $F414; };
+LABEL { NAME "soundfx"; ADDR $F428; };
+LABEL { NAME "changebankrou"; ADDR $F442; };
+LABEL { NAME "changebankrou1"; ADDR $F444; };
+LABEL { NAME "clearscr"; ADDR $F449; };
+LABEL { NAME "clearspriteblock"; ADDR $F453; };
+LABEL { NAME "clearspriteblock1"; ADDR $F455; };
+LABEL { NAME "turninteron"; ADDR $F477; };
+LABEL { NAME "turninterofffade"; ADDR $F494; };
+LABEL { NAME "fadeoffscreen"; ADDR $F49D; };
+LABEL { NAME "turninteroff"; ADDR $F4AC; };
+LABEL { NAME "turninteroff1"; ADDR $F4B2; };
+LABEL { NAME "highbitadd"; ADDR $F4DB; };
+LABEL { NAME "printscore"; ADDR $F509; };
+LABEL { NAME "addtoscore"; ADDR $F54B; };
+LABEL { NAME "addtolp"; ADDR $F556; };
+LABEL { NAME "endupdatescore"; ADDR $F56C; };
+LABEL { NAME "resetscore"; ADDR $F56F; };
+LABEL { NAME "subfromhearts"; ADDR $F597; };
+LABEL { NAME "subfromhearts1"; ADDR $F59D; };
+LABEL { NAME "killyou1"; ADDR $F5B6; };
+LABEL { NAME "littlekill"; ADDR $F5D4; };
+LABEL { NAME "printhearts"; ADDR $F5DE; };
+LABEL { NAME "heartsdefs"; ADDR $F62C; };
+LABEL { NAME "heartbeat"; ADDR $F630; };
+LABEL { NAME "waitforstartkey"; ADDR $F63D; };
+
+# MAPSCROL.ROU — map scrolling
+LABEL { NAME "attributemasks"; ADDR $F669; };
+LABEL { NAME "attributeands"; ADDR $F66D; };
+LABEL { NAME "setxscroll"; ADDR $F67D; };
+LABEL { NAME "printmapdownside"; ADDR $F6D0; };
+LABEL { NAME "decmapset"; ADDR $F6E9; };
+LABEL { NAME "setmapset"; ADDR $F6F7; };
+LABEL { NAME "mapnotmoved"; ADDR $F71A; };
+LABEL { NAME "times14tablelo"; ADDR $F72B; };
+LABEL { NAME "times14tablehi"; ADDR $F82B; };
+LABEL { NAME "findsolid"; ADDR $F92B; };
+LABEL { NAME "shifts4"; ADDR $F965; };
+LABEL { NAME "shifts2"; ADDR $F967; };
+LABEL { NAME "shifts0"; ADDR $F969; };
+LABEL { NAME "solidchrmasks"; ADDR $F96E; };
+LABEL { NAME "findblock"; ADDR $F972; };
+LABEL { NAME "rightside"; ADDR $F9BF; };
+LABEL { NAME "bottompart"; ADDR $F9C6; };
+LABEL { NAME "rightside1"; ADDR $F9D1; };
+LABEL { NAME "noblocksneeded"; ADDR $F9D7; };
+LABEL { NAME "bringonmap"; ADDR $F9D8; };
+LABEL { NAME "getblockbit"; ADDR $FA15; };
+LABEL { NAME "checkchangedblock"; ADDR $FA2A; };
+LABEL { NAME "checkchangedblock1"; ADDR $FA2D; };
+LABEL { NAME "addachangedblock"; ADDR $FA58; };
+LABEL { NAME "addachangedblock1"; ADDR $FA5E; };
+LABEL { NAME "deleteachangedblock"; ADDR $FAC0; };
+LABEL { NAME "deleteachangedblock1"; ADDR $FAC4; };
+LABEL { NAME "blocknotonscreen"; ADDR $FB0B; };
+LABEL { NAME "printblocktoscreencheck"; ADDR $FB0C; };
+LABEL { NAME "printblocktoscreen"; ADDR $FB1F; };
+LABEL { NAME "attrytable"; ADDR $FBEB; };
+LABEL { NAME "gointonewmap"; ADDR $FBFB; };
+LABEL { NAME "internoton"; ADDR $FC19; };
+LABEL { NAME "makeupchrset"; ADDR $FC88; };
+LABEL { NAME "nomorechrsformap"; ADDR $FC9A; };
+LABEL { NAME "playingsametune"; ADDR $FCC8; };
+LABEL { NAME "checkoffscreen"; ADDR $FCCF; };
+LABEL { NAME "goingofftop"; ADDR $FCF0; };
+LABEL { NAME "goingoffbottom"; ADDR $FCFD; };
+LABEL { NAME "changingscreen"; ADDR $FD08; };
+LABEL { NAME "doeachmap"; ADDR $FD2B; };
+LABEL { NAME "trynextmap"; ADDR $FD32; };
+LABEL { NAME "possiblemap"; ADDR $FD4C; };
+LABEL { NAME "mapinfo"; ADDR $FD95; };
+LABEL { NAME "tuneforstrip"; ADDR $FDE3; };
+
+# ENDCODE.ROU — vectors
+LABEL { NAME "cm_irq"; ADDR $FFF9; };
+LABEL { NAME "vec_nmi"; ADDR $FFFA; };
+LABEL { NAME "vec_reset"; ADDR $FFFC; };
+LABEL { NAME "vec_irq"; ADDR $FFFE; };
+
+# --- Code/Data ranges ---
+RANGE { START $C000; END $C003; TYPE ByteTable; };
+RANGE { START $C004; END $C009; TYPE Code; };
+RANGE { START $C00A; END $C019; TYPE ByteTable; };
+RANGE { START $C01A; END $C0F1; TYPE ByteTable; };
+RANGE { START $C0F2; END $C0FF; TYPE ByteTable; };
+RANGE { START $C100; END $C10D; TYPE ByteTable; };
+RANGE { START $C10E; END $C11D; TYPE ByteTable; };
+RANGE { START $C11E; END $C1F5; TYPE ByteTable; };
+RANGE { START $D90E; END $D916; TYPE ByteTable; };
+RANGE { START $DE70; END $DF6F; TYPE ByteTable; };
+RANGE { START $E105; END $E108; TYPE ByteTable; };
+RANGE { START $E1E3; END $E1EA; TYPE ByteTable; };
+RANGE { START $E3EB; END $E402; TYPE ByteTable; };
+RANGE { START $E523; END $E52A; TYPE ByteTable; };
+RANGE { START $E8DB; END $E95E; TYPE WordTable; };   # SPRITESD.DAT pointer table (66 entries)
+RANGE { START $E95F; END $ECF0; TYPE ByteTable; };   # SPRITESD.DAT sprite definitions + chr data
+RANGE { START $EE2C; END $EE35; TYPE ByteTable; };
+RANGE { START $F1A8; END $F1DF; TYPE ByteTable; };   # UNPACK.ROU compacted chr table (14 x 4 bytes)
+RANGE { START $F1E0; END $F380; TYPE Code; };        # UNPACK.ROU code (copyblockofcompactedchrs etc.)
+RANGE { START $F381; END $F392; TYPE ByteTable; };   # UNPACK.ROU lookup tables (PP1_FC3/FC2/FC1/F1L/F2H)
+RANGE { START $F449; END $F452; TYPE ByteTable; };
+RANGE { START $F72B; END $F82A; TYPE ByteTable; };
+RANGE { START $F82B; END $F92A; TYPE ByteTable; };
+RANGE { START $FBEB; END $FBFA; TYPE ByteTable; };
+RANGE { START $FD95; END $FDE2; TYPE ByteTable; };
+RANGE { START $FDE3; END $FDEF; TYPE ByteTable; };
+RANGE { START $FF00; END $FFE3; TYPE ByteTable; };   # JUNK zero padding
+RANGE { START $FFF9; END $FFF9; TYPE Code; };
+RANGE { START $FFFA; END $FFFF; TYPE WordTable; };
+
+# --- Code regions (between data tables) ---
+# $C1F6-$D90D split for XTRACONT data + CONTROL runtable
+RANGE { START $C1F6; END $C586; TYPE Code; };
+RANGE { START $C587; END $C58E; TYPE ByteTable; };   # INTERUPT.ROU fademasks+fade1masks
+RANGE { START $C58F; END $CCC8; TYPE Code; };
+RANGE { START $CCC9; END $CCF8; TYPE ByteTable; };   # CONTROL.ROU runtablelo (48 bytes)
+RANGE { START $CCF9; END $CEF9; TYPE Code; };
+RANGE { START $CEFA; END $D3C7; TYPE ByteTable; };   # XTRACONT.ROU pointer tables + map data
+RANGE { START $D3C8; END $D46E; TYPE Code; };
+RANGE { START $D46F; END $D4EE; TYPE ByteTable; };   # XTRACONT.ROU startstarstable
+RANGE { START $D4EF; END $D90D; TYPE Code; };
+
+# $D917-$DE6F split for ONSCREEN ablockrous word table
+RANGE { START $D917; END $DE51; TYPE Code; };
+RANGE { START $DE52; END $DE6F; TYPE WordTable; };   # ONSCREEN.ROU ablockrous (15 words)
+
+# $DF70-$E104 split for ONSCREEN updatescrrous + firestable
+RANGE { START $DF70; END $DF8D; TYPE Code; };
+RANGE { START $DF8E; END $DFA9; TYPE WordTable; };   # ONSCREEN.ROU updatescrrous (14 words)
+RANGE { START $DFAA; END $E06A; TYPE Code; };
+RANGE { START $E06B; END $E06E; TYPE ByteTable; };   # ONSCREEN.ROU firestable (4 bytes)
+RANGE { START $E06F; END $E104; TYPE Code; };
+
+RANGE { START $E109; END $E1E2; TYPE Code; };
+
+# $E1EB-$E3EA split for ONSCREEN firetable
+RANGE { START $E1EB; END $E276; TYPE Code; };
+RANGE { START $E277; END $E27E; TYPE ByteTable; };   # ONSCREEN.ROU firetable (8 bytes)
+RANGE { START $E27F; END $E3EA; TYPE Code; };
+
+RANGE { START $E403; END $E522; TYPE Code; };
+RANGE { START $E52B; END $E8DA; TYPE Code; };
+RANGE { START $ECF1; END $EE2B; TYPE Code; };
+RANGE { START $EE36; END $F1A7; TYPE Code; };
+RANGE { START $F393; END $F448; TYPE Code; };
+
+# $F453-$F72A split for GENERAL + MAPSCROL data tables
+RANGE { START $F453; END $F4DA; TYPE Code; };
+RANGE { START $F4DB; END $F4DD; TYPE ByteTable; };   # GENERAL.ROU highbitadd (3 bytes)
+RANGE { START $F4DE; END $F62B; TYPE Code; };
+RANGE { START $F62C; END $F63C; TYPE ByteTable; };   # GENERAL.ROU heartsdefs+heartbeat+treaspal
+RANGE { START $F63D; END $F668; TYPE Code; };
+RANGE { START $F669; END $F67C; TYPE ByteTable; };   # MAPSCROL.ROU attributemasks+attributeands
+RANGE { START $F67D; END $F72A; TYPE Code; };
+
+# $F92B-$FBEA split for MAPSCROL solidchrmasks
+RANGE { START $F92B; END $F96D; TYPE Code; };
+RANGE { START $F96E; END $F971; TYPE ByteTable; };   # MAPSCROL.ROU solidchrmasks (4 bytes)
+RANGE { START $F972; END $FBEA; TYPE Code; };
+
+RANGE { START $FBFB; END $FD94; TYPE Code; };
+RANGE { START $FDF0; END $FE64; TYPE Code; };   # second changingscreen copy
+RANGE { START $FE65; END $FEFF; TYPE ByteTable; }; # garbled CHR/sprite data
+RANGE { START $FFE4; END $FFF8; TYPE Code; };

@@ -1,0 +1,140 @@
+# da65 info file for Bank 2 (switchable at $8000)
+# CM logo routine + character set data — 98% match to alpha
+
+GLOBAL {
+    STARTADDR $8000;
+    CPU "6502";
+    COMMENTS 4;
+};
+
+SEGMENT { START $8000; END $BFFF; NAME "BANK_2"; };
+
+# --- Zero-page variables (from VARS.PDS) ---
+LABEL { NAME "cm_frames";              ADDR $0000; };
+LABEL { NAME "control0";               ADDR $0001; };
+LABEL { NAME "control1";               ADDR $0002; };
+LABEL { NAME "interon";                ADDR $0003; };
+LABEL { NAME "seed";                   ADDR $0004; };
+LABEL { NAME "pad";                    ADDR $0007; };
+LABEL { NAME "debounce";               ADDR $0008; };
+LABEL { NAME "y_scroll";               ADDR $0009; };
+LABEL { NAME "x_scroll";               ADDR $000A; };
+LABEL { NAME "vrampointer";            ADDR $000C; };
+LABEL { NAME "bankno";                 ADDR $000D; };
+LABEL { NAME "spriteblockpointer";     ADDR $000E; };
+LABEL { NAME "blockpointer";           ADDR $000F; };
+LABEL { NAME "counter";                ADDR $0010; };
+LABEL { NAME "toplevvar1";             ADDR $0011; };
+LABEL { NAME "toplevvar2";             ADDR $0012; };
+LABEL { NAME "toplevvar3";             ADDR $0013; };
+LABEL { NAME "toplevvar4";             ADDR $0014; };
+LABEL { NAME "toplevvar5";             ADDR $0015; };
+LABEL { NAME "toplevvar6";             ADDR $0016; };
+LABEL { NAME "toplevvar7";             ADDR $0017; };
+LABEL { NAME "toplevvar8";             ADDR $0018; };
+LABEL { NAME "toplevvar9";             ADDR $0019; };
+LABEL { NAME "toplevvar10";            ADDR $001A; };
+LABEL { NAME "rom_check_zp";           ADDR $0020; };  # ZP destination for smiley relocating code
+LABEL { NAME "address";                ADDR $001B; };
+LABEL { NAME "address2";               ADDR $001F; };
+LABEL { NAME "address5";               ADDR $0025; };
+LABEL { NAME "address9";               ADDR $002D; };
+LABEL { NAME "temp1";                  ADDR $0032; };
+LABEL { NAME "temp4";                  ADDR $0035; };
+LABEL { NAME "scrxl";                  ADDR $003B; };
+LABEL { NAME "scrxh";                  ADDR $003C; };
+LABEL { NAME "attripointer";           ADDR $003E; };
+LABEL { NAME "blockattri";             ADDR $003F; };
+LABEL { NAME "mappointer";             ADDR $0040; };
+LABEL { NAME "pause";                  ADDR $0044; };
+LABEL { NAME "palversion";             ADDR $0046; };
+LABEL { NAME "scrolldir";              ADDR $0047; };
+LABEL { NAME "lives";                  ADDR $0048; };
+LABEL { NAME "heartcounter";           ADDR $004A; };
+LABEL { NAME "noofparas";              ADDR $004B; };
+LABEL { NAME "extravarpointer";        ADDR $004C; };
+LABEL { NAME "heartxl";                ADDR $004F; };
+LABEL { NAME "hearty";                 ADDR $0051; };
+LABEL { NAME "set_bank_zp";            ADDR $0086; };  # ZP relocated SET_BANK routine
+
+# --- Hardware registers ---
+LABEL { NAME "_control0";              ADDR $2000; };
+LABEL { NAME "_control1";              ADDR $2001; };
+LABEL { NAME "_spriteaddr";            ADDR $2003; };
+LABEL { NAME "_scrollcon";             ADDR $2005; };
+LABEL { NAME "_vramaddr";              ADDR $2006; };
+LABEL { NAME "_vramdata";              ADDR $2007; };
+LABEL { NAME "_dmafunc";               ADDR $4014; };
+LABEL { NAME "_kpreg1";                ADDR $4016; };
+LABEL { NAME "_kpreg2";                ADDR $4017; };
+LABEL { NAME "_bank";                  ADDR $FFFE; };
+
+# --- RAM constants ---
+LABEL { NAME "normalvars";             ADDR $0300; };
+LABEL { NAME "cm_flags";               ADDR $07FE; };
+LABEL { NAME "cm_powerup";             ADDR $07FF; };
+
+# ===================================================================
+# CMLOGO.ROU — Codemasters logo display
+# ===================================================================
+LABEL { NAME "cm_logo";                ADDR $8000; };
+LABEL { NAME "cm_characters";          ADDR $8423; };  # downloads PP1 chr data
+LABEL { NAME "cmlogo_pp1";             ADDR $842C; };  # compressed chr data start
+
+# CMLOGO data tables ($8361-$8422)
+LABEL { NAME "cm_sfxnoise";            ADDR $8361; };  # SFX noise table
+LABEL { NAME "cm_inittab";             ADDR $8365; };  # init values
+LABEL { NAME "cm_stdata";              ADDR $836A; };  # MASTERS character strip data
+LABEL { NAME "cm_colfade";             ADDR $83AC; };  # colour fade table
+LABEL { NAME "cm_quartmap";            ADDR $83BF; };  # quarter circle bitmap
+LABEL { NAME "cm_codemap";             ADDR $83C5; };  # CODE bitmap
+LABEL { NAME "cm_abmap";               ADDR $83D9; };  # AB logo tile map
+LABEL { NAME "cm_palette";             ADDR $841B; };  # 8-byte palette
+
+# ===================================================================
+# SMILEY.ROU — ROM/RAM verification + smiley face display
+# ===================================================================
+LABEL { NAME "smiley";                 ADDR $8906; };
+LABEL { NAME "smiley_checksums";       ADDR $8A73; };  # NOP padding + checksum expected values
+LABEL { NAME "smiley_good_face";       ADDR $8AA2; };
+LABEL { NAME "smiley_bad_face";        ADDR $8AA8; };
+
+# ===================================================================
+# Character set data (PP1 compressed)
+# ===================================================================
+LABEL { NAME "face_data";              ADDR $8B3A; };  # smiley face tile data (48 bytes)
+LABEL { NAME "collisionchr";           ADDR $8B6A; };  # hex 0e0080
+LABEL { NAME "solidcollisionchr";      ADDR $8B6D; };  # hex 0fff
+LABEL { NAME "hiscorechrs";            ADDR $8B6F; };  # HISCORE.PP1
+LABEL { NAME "topchrs";                ADDR $90E9; };  # TOPCHRS.PP1
+LABEL { NAME "botchrs";                ADDR $997A; };  # BOTCHRS.PP1
+LABEL { NAME "robinchr";               ADDR $A213; };  # ROBINCHR.PP1
+LABEL { NAME "basechr";                ADDR $AC50; };  # BASECHR.PP1
+LABEL { NAME "beadchr";                ADDR $B152; };  # BEADCHR.PP1
+LABEL { NAME "boxchr";                 ADDR $B227; };  # BOXCHR.PP1
+LABEL { NAME "archchr";                ADDR $B255; };  # ARCHCHR.PP1
+LABEL { NAME "rockchr";                ADDR $B5EE; };  # ROCKCHR.PP1
+LABEL { NAME "bedchr";                 ADDR $BA68; };  # BEDCHR.PP1
+LABEL { NAME "doorchr";                ADDR $BC8D; };  # DOORCHR.PP1
+LABEL { NAME "okchr";                  ADDR $BEC7; };  # OKCHR.PP1
+
+# ===================================================================
+# Code/Data ranges
+# ===================================================================
+
+# CMLOGO.ROU code
+RANGE { START $8000; END $8360; TYPE Code; };
+# CMLOGO inline data tables
+RANGE { START $8361; END $8422; TYPE ByteTable; };
+# CM_CHARACTERS subroutine (9 bytes)
+RANGE { START $8423; END $842B; TYPE Code; };
+# CMLOGO.PP1 compressed chr data
+RANGE { START $842C; END $8905; TYPE ByteTable; };
+# SMILEY.ROU code
+RANGE { START $8906; END $8A72; TYPE Code; };
+# SMILEY checksum/name data + NOP padding
+RANGE { START $8A73; END $8AA1; TYPE ByteTable; };
+# SMILEY face display code
+RANGE { START $8AA2; END $8B39; TYPE Code; };
+# face_data + all PP1 character set data + padding
+RANGE { START $8B3A; END $BFFF; TYPE ByteTable; };

@@ -1,0 +1,8 @@
+[package]
+name = "pp1tool"
+version = "0.1.0"
+edition = "2024"
+description = "PP1 NES CHR tile compressor/decompressor and viewer"
+
+[dependencies]
+image = "0.25"

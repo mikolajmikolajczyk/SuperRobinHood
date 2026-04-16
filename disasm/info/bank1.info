@@ -1,0 +1,241 @@
+# da65 info file for Bank 1 (switchable at $8000)
+# Music, hiscore, title, soundfx, routines — 77% match to alpha
+
+GLOBAL {
+    STARTADDR $8000;
+    CPU "6502";
+    COMMENTS 4;
+};
+
+SEGMENT { START $8000; END $BFFF; NAME "BANK_1"; };
+
+# --- Zero-page variables (from VARS.PDS) ---
+LABEL { NAME "cm_frames";              ADDR $0000; };
+LABEL { NAME "control0";               ADDR $0001; };
+LABEL { NAME "control1";               ADDR $0002; };
+LABEL { NAME "interon";                ADDR $0003; };
+LABEL { NAME "seed";                   ADDR $0004; };
+LABEL { NAME "pad";                    ADDR $0007; };
+LABEL { NAME "y_scroll";               ADDR $0009; };
+LABEL { NAME "x_scroll";               ADDR $000A; };
+LABEL { NAME "vrampointer";            ADDR $000C; };
+LABEL { NAME "bankno";                 ADDR $000D; };
+LABEL { NAME "spriteblockpointer";     ADDR $000E; };
+LABEL { NAME "counter";                ADDR $0010; };
+LABEL { NAME "toplevvar2";             ADDR $0012; };
+LABEL { NAME "toplevvar3";             ADDR $0013; };
+LABEL { NAME "toplevvar4";             ADDR $0014; };
+LABEL { NAME "toplevvar6";             ADDR $0016; };
+LABEL { NAME "toplevvar8";             ADDR $0018; };
+LABEL { NAME "toplevvar9";             ADDR $0019; };
+LABEL { NAME "address";                ADDR $001B; };
+LABEL { NAME "address1";               ADDR $001D; };
+LABEL { NAME "address4";               ADDR $0023; };
+LABEL { NAME "address5";               ADDR $0025; };
+LABEL { NAME "address6";               ADDR $0027; };
+LABEL { NAME "address7";               ADDR $0029; };
+LABEL { NAME "address8";               ADDR $002B; };
+LABEL { NAME "address9";               ADDR $002D; };
+LABEL { NAME "tempx";                  ADDR $002F; };
+LABEL { NAME "temp";                   ADDR $0031; };
+LABEL { NAME "temp1";                  ADDR $0032; };
+LABEL { NAME "temp2";                  ADDR $0033; };
+LABEL { NAME "temp3";                  ADDR $0034; };
+LABEL { NAME "temp4";                  ADDR $0035; };
+LABEL { NAME "temp6";                  ADDR $0037; };
+LABEL { NAME "temp7";                  ADDR $0038; };
+LABEL { NAME "temp8";                  ADDR $0039; };
+LABEL { NAME "temp9";                  ADDR $003A; };
+LABEL { NAME "scrxl";                  ADDR $003B; };
+LABEL { NAME "scrxh";                  ADDR $003C; };
+LABEL { NAME "mapno";                  ADDR $0042; };
+LABEL { NAME "noofparas";              ADDR $004B; };
+LABEL { NAME "extravarpointer";        ADDR $004C; };
+LABEL { NAME "heartxl";                ADDR $004F; };
+LABEL { NAME "heartxh";                ADDR $0050; };
+LABEL { NAME "hearty";                 ADDR $0051; };
+
+# --- Hardware registers ---
+LABEL { NAME "_vramdata";              ADDR $2007; };
+LABEL { NAME "_bank";                  ADDR $FFFE; };
+
+# --- RAM constants ---
+LABEL { NAME "vrambuffer";             ADDR $0100; };
+LABEL { NAME "spriteblock";            ADDR $0200; };
+
+# ===================================================================
+# MUSIC1.MUS — music engine code + music data
+# ===================================================================
+LABEL { NAME "bank1_entry";            ADDR $8000; };
+LABEL { NAME "START_MUSIC";            ADDR $8007; };
+LABEL { NAME "TRIGGER";                ADDR $803A; };
+LABEL { NAME "PLAY_MUSIC";             ADDR $8066; };
+LABEL { NAME "DELAY_BIT";              ADDR $80A1; };
+LABEL { NAME "ADSR";                   ADDR $80B5; };
+LABEL { NAME "DO_WOB_CHECK";           ADDR $8391; };
+LABEL { NAME "SUB_VOICE";              ADDR $83CD; };
+LABEL { NAME "ADD_VOICE";              ADDR $83F0; };
+LABEL { NAME "NEW_MACRO";              ADDR $8417; };
+LABEL { NAME "DO_VOICES";              ADDR $84A2; };
+# Music data tables
+LABEL { NAME "TABLO";                  ADDR $860F; };  # note frequency table (low)
+LABEL { NAME "TABHI";                  ADDR $866F; };  # note frequency table (high)
+LABEL { NAME "INDEX";                  ADDR $86CF; };  # song index pointer
+LABEL { NAME "INSTRUMENTS";            ADDR $86DA; };  # instrument definitions
+
+# ===================================================================
+# HISCORE.ROU — high score entry and display
+# ===================================================================
+LABEL { NAME "tryhiscore";             ADDR $9760; };
+LABEL { NAME "trytoentername";         ADDR $9818; };
+LABEL { NAME "lookingathiscores";      ADDR $9874; };
+LABEL { NAME "setuphiscores";          ADDR $9899; };
+LABEL { NAME "entername";              ADDR $98E6; };
+LABEL { NAME "chooseletter";           ADDR $990C; };
+LABEL { NAME "deleteletter";           ADDR $9940; };
+LABEL { NAME "flashletter";            ADDR $9985; };
+LABEL { NAME "hiscorescreen";           ADDR $99BE; };  # hiscore screen tile layout
+LABEL { NAME "hiscorescr4";            ADDR $99F0; };  # second part of hiscore screen
+LABEL { NAME "hiscorefancybits";       ADDR $9A4C; };
+LABEL { NAME "enternamemess";          ADDR $9AE9; };
+LABEL { NAME "flashingbit";            ADDR $9AF0; };
+LABEL { NAME "credits";                ADDR $9AFF; };
+LABEL { NAME "copyhiscorestoram";      ADDR $9C71; };
+LABEL { NAME "checkhiscores";          ADDR $9D79; };  # validation pattern (9 bytes of $80)
+LABEL { NAME "initnames";              ADDR $9CC4; };
+
+# ===================================================================
+# TITLE.ROU — title screen
+# ===================================================================
+LABEL { NAME "titlescreen";            ADDR $9D8A; };
+LABEL { NAME "stillintitle";           ADDR $9D8E; };
+LABEL { NAME "showtitle";              ADDR $9DAA; };
+LABEL { NAME "turnonscreen";           ADDR $9DAD; };
+LABEL { NAME "waitforstart";           ADDR $9DB0; };
+LABEL { NAME "notshowingtitle";        ADDR $9DC2; };
+LABEL { NAME "conttitleloop";          ADDR $9DC7; };
+LABEL { NAME "putontitlesprites";      ADDR $9DEA; };
+LABEL { NAME "setuptitlescreen";       ADDR $9E1B; };
+LABEL { NAME "titlescreenmess";         ADDR $9E4F; };  # title screen tile/palette data
+LABEL { NAME "titlescreencolours";     ADDR $9EBE; };
+LABEL { NAME "pulsecolour";            ADDR $A1B3; };
+LABEL { NAME "pulsetable";             ADDR $A1D6; };
+
+# ===================================================================
+# SOUNDFX.ROU — sound effects engine
+# ===================================================================
+LABEL { NAME "FX_TABLE";               ADDR $A1E6; };  # SFX pointer table (low bytes)
+LABEL { NAME "FX_TABLE_hi";           ADDR $A1E7; };  # SFX pointer table (high bytes)
+LABEL { NAME "FX_ENVELOPES";           ADDR $A433; };
+LABEL { NAME "FX_TRYD";                ADDR $A454; };
+LABEL { NAME "fx_setup";               ADDR $A47E; };
+LABEL { NAME "fx_play";                ADDR $A52A; };
+LABEL { NAME "FX_NEXT";                ADDR $A571; };
+LABEL { NAME "FX_DO";                  ADDR $A5CD; };
+LABEL { NAME "FX_REALSPEED";           ADDR $A68C; };
+
+# ===================================================================
+# NEWBITS.ROU — coins, hearts, treasures, water, secrets
+# ===================================================================
+LABEL { NAME "restupdatecoin";         ADDR $A6DA; };
+LABEL { NAME "sparkle";                ADDR $A7E0; };  # 8-byte sparkle sprite pattern
+LABEL { NAME "putinheartbank";         ADDR $A7E8; };
+LABEL { NAME "coinco";                 ADDR $A838; };  # coin coordinate table (144 bytes)
+LABEL { NAME "floatupnumber";          ADDR $A8EE; };
+LABEL { NAME "print6treasures";        ADDR $AAE2; };
+LABEL { NAME "addsparkletotreasures";  ADDR $AB12; };
+LABEL { NAME "redefinewater";          ADDR $AB6C; };
+LABEL { NAME "secrettable";            ADDR $ABD9; };  # 24 secret area pointers
+
+# ===================================================================
+# EXPLODE.ROU — explosion effects, heart display
+# ===================================================================
+LABEL { NAME "robinhearts";            ADDR $AD12; };
+LABEL { NAME "updatehearts";           ADDR $AD2D; };
+LABEL { NAME "doeachheart";            ADDR $AD76; };
+LABEL { NAME "expsizetable";           ADDR $ADD6; };
+LABEL { NAME "inchearts4";             ADDR $AE14; };
+LABEL { NAME "inchearts3";             ADDR $AE17; };
+LABEL { NAME "getvalue";               ADDR $AE21; };
+LABEL { NAME "putspinheart";           ADDR $AE62; };
+LABEL { NAME "printcircleofhearts";    ADDR $AE79; };
+LABEL { NAME "nomorehearts";           ADDR $AF3D; };
+LABEL { NAME "sincostable";            ADDR $AF40; };  # 64-entry sine/cosine lookup
+LABEL { NAME "exploderoubitsl";        ADDR $AF81; };  # explosion routine dispatch (low)
+LABEL { NAME "exploderoubitsh";        ADDR $AF88; };  # explosion routine dispatch (high)
+LABEL { NAME "flashrobin";             ADDR $AF8F; };  # flash timing table
+
+# ===================================================================
+# PRTROBIN.ROU — Robin sprite printing
+# ===================================================================
+LABEL { NAME "printrobin";             ADDR $AF95; };
+LABEL { NAME "printrobin1";            ADDR $AFC5; };
+LABEL { NAME "normalrun";              ADDR $AFEE; };
+LABEL { NAME "workoutbody";            ADDR $B033; };
+LABEL { NAME "workouthead";            ADDR $B058; };
+LABEL { NAME "nowprintlegs";           ADDR $B05B; };
+LABEL { NAME "robpointtable";          ADDR $B074; };
+LABEL { NAME "spriteheights";          ADDR $B07D; };
+LABEL { NAME "workoutheadrou";         ADDR $B09D; };
+LABEL { NAME "printrobinonladder";     ADDR $B0D6; };
+LABEL { NAME "printrobinshooting";     ADDR $B137; };
+LABEL { NAME "shootingfrms";           ADDR $B14F; };
+LABEL { NAME "subtrackheightofsprite"; ADDR $B159; };
+
+# ===================================================================
+# Code/Data ranges
+# ===================================================================
+
+# MUSIC1.MUS code
+RANGE { START $8000; END $860E; TYPE Code; };
+# Music data (TABLO, TABHI, INDEX, INSTRUMENTS, song data, JONSBIT data)
+RANGE { START $860F; END $9817; TYPE ByteTable; };
+
+# HISCORE.ROU code (trytoentername through printachr)
+RANGE { START $9818; END $99BD; TYPE Code; };
+# HISCORE.ROU screen data (hiscorescreen + hiscorescreencolours)
+RANGE { START $99BE; END $9C70; TYPE ByteTable; };
+# HISCORE.ROU code (copyhiscorestoram)
+RANGE { START $9C71; END $9CC3; TYPE Code; };
+# HISCORE.ROU initnames + checkhiscores data
+RANGE { START $9CC4; END $9D89; TYPE ByteTable; };
+
+# TITLE.ROU code (titlescreen + putontitlesprites + setuptitlescreen)
+RANGE { START $9D8A; END $9E4E; TYPE Code; };
+# TITLE.ROU screen data (titlescreencolours + titlescreenmess etc.)
+RANGE { START $9E4F; END $A1B2; TYPE ByteTable; };
+# TITLE.ROU code (pulsecolour)
+RANGE { START $A1B3; END $A1D5; TYPE Code; };
+# pulsetable + FX_TABLE + FX bytecodes
+RANGE { START $A1D6; END $A432; TYPE ByteTable; };
+
+# SOUNDFX.ROU + NEWBITS.ROU code
+RANGE { START $A433; END $A7DF; TYPE Code; };
+# sparkle sprite pattern (8 bytes)
+RANGE { START $A7E0; END $A7E7; TYPE ByteTable; };
+# NEWBITS.ROU code (putinheartbank etc.)
+RANGE { START $A7E8; END $A837; TYPE Code; };
+# NEWBITS coin coordinate table + sprite/shape data
+RANGE { START $A838; END $A8C7; TYPE ByteTable; };
+# NEWBITS.ROU code (floatupnumber etc.)
+RANGE { START $A8C8; END $A92F; TYPE Code; };
+# NEWBITS message data (completedgame, treasureleft, printlivesinfo, etc.)
+RANGE { START $A930; END $AAE1; TYPE ByteTable; };
+# NEWBITS.ROU code (print6treasures)
+RANGE { START $AAE2; END $AB05; TYPE Code; };
+# NEWBITS.ROU showalltreasure coordinate tables (12 bytes)
+RANGE { START $AB06; END $AB11; TYPE ByteTable; };
+# NEWBITS.ROU code (addsparkletotreasures, redefinewater)
+RANGE { START $AB12; END $ABD8; TYPE Code; };
+# NEWBITS secrettable + secret data + EXPLODE dispatch tables
+RANGE { START $ABD9; END $AD11; TYPE ByteTable; };
+
+# EXPLODE.ROU code
+RANGE { START $AD12; END $AF3F; TYPE Code; };
+# sincostable + dispatch tables + flashrobin
+RANGE { START $AF40; END $AF94; TYPE ByteTable; };
+
+# PRTROBIN.ROU code
+RANGE { START $AF95; END $B164; TYPE Code; };
+# CHR tile data + padding
+RANGE { START $B165; END $BFFF; TYPE ByteTable; };

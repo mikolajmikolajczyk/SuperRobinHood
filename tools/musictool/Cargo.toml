@@ -1,0 +1,8 @@
+[package]
+name = "musictool"
+version = "0.1.0"
+edition = "2021"
+description = "Parser and player for the Codemasters NES 'Mega Music Driver' format"
+
+[dependencies]
+hound = "3.5"
